@@ -2,7 +2,7 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 import logging
-
+#https://towardsdatascience.com/creating-a-custom-openai-gym-environment-for-stock-trading-be532be3910e
 logger = logging.getLogger(__name__)
 
 class SugarscapeEnv(gym.Env):
