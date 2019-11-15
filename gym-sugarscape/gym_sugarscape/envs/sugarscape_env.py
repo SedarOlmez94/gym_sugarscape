@@ -3,7 +3,7 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 
 class SugarscapeEnv(gym.Env):
-    metadata = {'render.modes: ['human']'}
+    metadata = {'render.modes': ['human']}
 
     def __init__(self):
         pass()
@@ -19,4 +19,3 @@ class SugarscapeEnv(gym.Env):
 
     def close(self):
         pass()
-    
