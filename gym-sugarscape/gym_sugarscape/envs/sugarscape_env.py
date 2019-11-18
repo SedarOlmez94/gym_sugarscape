@@ -10,8 +10,9 @@ class SugarscapeEnv(gym.Env):
 
     ACTIONS = ["N", "E", "S", "W", "EAT"]
 
-    def __init__(self, max_file=None, environment_size=None, enable_render = True):
+    def __init__(self, max_file=None, enable_render = True):
         super(SugarscapeEnv, self).__init__()
+        # Set of initialised variables for each agent.
         self.viewer = None
         self.enable_render = enable_render
         self.max_age = (0, 100)
@@ -20,13 +21,15 @@ class SugarscapeEnv(gym.Env):
         self.growth_rate = 1
         self.max_vision_distance = (1, 6)
 
-    # Define action and observation space
-    # They must be gym.spaces objects
-    # Example when using discrete actions:
-    self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)#Replace with number of applicable actions
-    # Example for using image as input:
-    self.observation_space = spaces.Box(low=0, high=255, shape=
-        (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
+        self.environment_view =
+
+        # Define action and observation space
+        # They must be gym.spaces objects
+        # Example when using discrete actions:
+        self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)#Replace with number of applicable actions
+        # Example for using image as input:
+        self.observation_space = spaces.Box(low=0, high=255, shape=
+            (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
 
     def step(self, action):
         #Execute one time step within the environment
