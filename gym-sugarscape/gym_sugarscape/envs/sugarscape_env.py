@@ -66,13 +66,17 @@ class SugarscapeEnv(gym.Env):
         number_of_agents = 0
         test_loop = 0
 
+        # Creating 250 agent objects and putting them into the list_of_agents array.
         for i in range(250):
             list_of_agents.append(Agent(i))
 
+        # Looping though the environment and adding random values between 0 and 4
+        # This will be sugar levels.
         for i in range(50):
             for j in range(50):
                 self.environment[i, j] = random.randrange(0, 4)
 
+        # Looping 250 times over the environment and randomly placing agents on 0 sugar cells.
         while(number_of_agents != 250):
             x = random.randrange(50)
             y = random.randrange(50)
@@ -84,6 +88,7 @@ class SugarscapeEnv(gym.Env):
         #     for j in range(50):
         #         if(self.environment[i, j] == "X"):
         #             test_loop = test_loop + 1
+
 
         print(self.environment)
 
