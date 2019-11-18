@@ -57,18 +57,16 @@ class SugarscapeEnv(gym.Env):
 
     def reset(self):
         # Set of initialised variables for each agent.
-        self.max_age = (0, 100)
-        self.max_metabolic_rate = (1, 4)
-        self.s_wealth = (5, 25)
         self.growth_rate = 1
-        self.max_vision_distance = (1, 6)
         self.environment = numpy.arange(2500).reshape(50, 50)
         self.environment.fill(0)
+        self.agents = 250
 
         for i in range(50):
             for j in range(50):
                 self.environment[i, j] = random.randrange(0, 4)
 
+        return self._next_observation()
 
     def render(self, mode = 'human'):
         # Render the environment to the screen.
