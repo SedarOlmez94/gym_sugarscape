@@ -10,9 +10,10 @@ class SugarscapeEnv(gym.Env):
 
     ACTIONS = ["N", "E", "S", "W", "EAT"]
 
-    def __init__(self, df):
+    def __init__(self, max_file=None, environment_size=None, enable_render = True):
         super(SugarscapeEnv, self).__init__()
-        self.df = df
+        self.viewer = None
+        self.enable_render = enable_render
         self.max_age = (0, 100)
         self.max_metabolic_rate = (1, 4)
         self.s_wealth = (5, 25)
