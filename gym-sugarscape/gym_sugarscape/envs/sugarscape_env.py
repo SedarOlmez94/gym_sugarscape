@@ -2,6 +2,7 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 import logging
+import numpy
 
 logger = logging.getLogger(__name__)
 
@@ -10,26 +11,32 @@ class SugarscapeEnv(gym.Env):
 
     ACTIONS = ["N", "E", "S", "W", "EAT"]
 
-    def __init__(self, max_file=None, enable_render = True):
+    # Define action and observation space
+    # They must be gym.spaces objects
+    # Example when using discrete actions:
+    action_space = spaces.Discrete(5)#Replace with number of applicable actions
+    observation_space = spaces.Discrete(2500)
+
+    def __init__(self):
         super(SugarscapeEnv, self).__init__()
         # Set of initialised variables for each agent.
-        self.viewer = None
-        self.enable_render = enable_render
         self.max_age = (0, 100)
         self.max_metabolic_rate = (1, 4)
         self.s_wealth = (5, 25)
         self.growth_rate = 1
         self.max_vision_distance = (1, 6)
 
-        self.environment_view =
+        environment = numpy.arange(
+            self.observation_space.n
+        ).reshape((50, 50))
 
-        # Define action and observation space
-        # They must be gym.spaces objects
-        # Example when using discrete actions:
-        self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)#Replace with number of applicable actions
-        # Example for using image as input:
-        self.observation_space = spaces.Box(low=0, high=255, shape=
-            (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
+        environment[-1, -1] = 0
+        self.P = numpy.zeros((self.action_space.n,
+                                self.observation_space.n,
+                                self.observation_space.n))
+        self.P[:, 0, 0] = 1
+
+        print(environment)
 
     def step(self, action):
         #Execute one time step within the environment
@@ -60,12 +67,7 @@ class SugarscapeEnv(gym.Env):
                  However, official evaluations of your agent are not allowed to
                  use this for learning.
         """
-        self._take_action(action)
-        self.status = self.env.step()
-        reward = self._get_reward()
-        ob = self.env.getState()
-        episode_over = self.status != hfo_py.IN_GAME
-        return ob, reward, episode_over, {}
+        print("")
 
     def reset(self):
         #Reset the state of the environment to an initial state.
@@ -76,7 +78,7 @@ class SugarscapeEnv(gym.Env):
         print("")
 
     def close(self):
-        pass()
+        print("")
 
     def _get_reward(self):
         """
@@ -88,3 +90,5 @@ class SugarscapeEnv(gym.Env):
             return self.somestate ** 2
         else:
             return 0
+
+x = SugarscapeEnv()
