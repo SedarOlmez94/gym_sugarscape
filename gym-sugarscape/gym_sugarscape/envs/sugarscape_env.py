@@ -2,14 +2,20 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 import logging
-#https://towardsdatascience.com/creating-a-custom-openai-gym-environment-for-stock-trading-be532be3910e
+
 logger = logging.getLogger(__name__)
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self, df):
         super(SugarscapeEnv, self).__init__()
+        self.df = df
+        self.max_age = (0, 100)
+        self.max_metabolic_rate = (1, 4)
+        self.s_wealth = (5, 25)
+        self.growth_rate = 1
+
     # Define action and observation space
     # They must be gym.spaces objects
     # Example when using discrete actions:
