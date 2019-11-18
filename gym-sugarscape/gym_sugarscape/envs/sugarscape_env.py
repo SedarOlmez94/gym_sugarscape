@@ -3,40 +3,26 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 import logging
 import numpy
-
+import sys
+import random
+numpy.set_printoptions(threshold=sys.maxsize)
 logger = logging.getLogger(__name__)
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
-
     ACTIONS = ["N", "E", "S", "W", "EAT"]
+    random.seed(9001)
 
     # Define action and observation space
     # They must be gym.spaces objects
     # Example when using discrete actions:
-    action_space = spaces.Discrete(5)#Replace with number of applicable actions
-    observation_space = spaces.Discrete(2500)
+
 
     def __init__(self):
         super(SugarscapeEnv, self).__init__()
-        # Set of initialised variables for each agent.
-        self.max_age = (0, 100)
-        self.max_metabolic_rate = (1, 4)
-        self.s_wealth = (5, 25)
-        self.growth_rate = 1
-        self.max_vision_distance = (1, 6)
+        self.action_space = spaces.Discrete(5) #Replace with number of applicable actions
+        self.observation_space = spaces.Discrete(2500)
 
-        environment = numpy.arange(
-            self.observation_space.n
-        ).reshape((50, 50))
-
-        environment[-1, -1] = 0
-        self.P = numpy.zeros((self.action_space.n,
-                                self.observation_space.n,
-                                self.observation_space.n))
-        self.P[:, 0, 0] = 1
-
-        print(environment)
 
     def step(self, action):
         #Execute one time step within the environment
@@ -70,8 +56,19 @@ class SugarscapeEnv(gym.Env):
         print("")
 
     def reset(self):
-        #Reset the state of the environment to an initial state.
-        print("")
+        # Set of initialised variables for each agent.
+        self.max_age = (0, 100)
+        self.max_metabolic_rate = (1, 4)
+        self.s_wealth = (5, 25)
+        self.growth_rate = 1
+        self.max_vision_distance = (1, 6)
+        self.environment = numpy.arange(2500).reshape(50, 50)
+        self.environment.fill(0)
+
+        for i in range(50):
+            for j in range(50):
+                self.environment[i, j] = random.randrange(0, 4)
+
 
     def render(self, mode = 'human'):
         # Render the environment to the screen.
