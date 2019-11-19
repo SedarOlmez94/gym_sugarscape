@@ -11,7 +11,7 @@ numpy.set_printoptions(threshold=sys.maxsize)
 logger = logging.getLogger(__name__)
 ACTIONS = ["STATIONARY", "N", "E", "S", "W", "EAT"]
 list_of_agents = []
-list_of_agents_dict = {}
+list_of_agents_shuffled = {}
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -72,7 +72,7 @@ class SugarscapeEnv(gym.Env):
 
     def _take_action(self, action):
         """ Converts the action space into an HFO action. """
-        global list_of_agents, ACTIONS
+        global list_of_agents, ACTIONS, list_of_agents_shuffled
 
         for number_of_agents in range(250):
             for x in range(50):
@@ -167,7 +167,7 @@ class SugarscapeEnv(gym.Env):
         number_of_agents = 0
         test_loop = 0
         global list_of_agents
-        global list_of_agents_dict
+        global list_of_agents_shuffled
 
         # Creating 250 agent objects and putting them into the list_of_agents array.
         for i in range(250):
@@ -185,7 +185,8 @@ class SugarscapeEnv(gym.Env):
             y = random.randrange(50)
             if(self.environment[x, y] == 0):
                 self.environment[x, y] = list_of_agents[number_of_agents].get_visual()
-                list_of_agents_dict[number_of_agents] = list_of_agents[number_of_agents]
+                # Added the agent objects have been placed down randomly onto the environment from first to last.
+                list_of_agents_shuffled[number_of_agents] = list_of_agents[number_of_agents]
                 number_of_agents = number_of_agents + 1
 
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
