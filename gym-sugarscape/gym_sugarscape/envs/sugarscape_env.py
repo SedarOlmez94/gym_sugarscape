@@ -11,7 +11,7 @@ numpy.set_printoptions(threshold=sys.maxsize)
 logger = logging.getLogger(__name__)
 ACTIONS = ["STATIONARY", "N", "E", "S", "W", "EAT"]
 list_of_agents = []
-
+list_of_agents_dict = {}
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -72,45 +72,85 @@ class SugarscapeEnv(gym.Env):
 
     def _take_action(self, action):
         """ Converts the action space into an HFO action. """
-        number_of_agents = 0
         global list_of_agents, ACTIONS
 
-        while(number_of_agents != 250):
-            x = random.randrange(50)
-            y = random.randrange(50)
-            if(self.environment[x, y] == 'X'):
-                vision_of_agent = list_of_agents[number_of_agents].get_vision()
+        for number_of_agents in range(250):
+            for x in range(50):
+                for y in range(50):
+                    if(self.environment[x, y] == 'X'):
+                        vision_of_agent = list_of_agents[number_of_agents].get_vision()
 
-                # STAY PUT
+                        # STAY PUT
+                        if((action == ACTIONS[0]) and (self.environment[x, y] > (self.environment[x, y - vision_of_agent] and
+                        self.environment[x + vision_of_agent, y] and self.environment[x - vision_of_agent, y] and self.environment[x, y + vision_of_agent]))):
+                            # AGENT COLLECTS SUGAR.
+                            list_of_agents[number_of_agents].collect_sugar(self.environment[x, y])
+                            # CALCULATE AGENT SUGAR HEALTH
+                            list_of_agents[number_of_agents].calculate_s_wealth()
+                            # SUGAR AT LOCATION NOW SET TO 0
+                            self.environment[x, y] = 0
+                            # ADD ACTIONS TO ENV ACT
+                            self.env.act(ACTIONS[0], ACTIONS[5])
 
-                # MOVE UP
-                if((action == ACTIONS[1]) and self.environment[x, y + vision_of_agent] > (self.environment[x, y - vision_of_agent] and
-                self.environment[x + vision_of_agent, y] and self.environment[x - vision_of_agent, y])):
-                    #MOVE AGENT TO NEW LOCATION.
-                    self.environment[x, y + vision_of_agent] = list_of_agents[number_of_agents].get_visual()
-                    # AGENT COLLECTS SUGAR.
-                    list_of_agents[number_of_agents].collect_sugar(self.environment[x, y + vision_of_agent])
-                    # CALCULATE AGENT SUGAR HEALTH
-                    list_of_agents[number_of_agents].calculate_s_wealth()
-                    # SUGAR AT LOCATION NOW SET TO 0
-                    self.environment[x, y + vision_of_agent] = 0
-                    # ADD ACTIONS TO ENV ACT
-                    self.env.act(ACTIONS[1], ACTIONS[5])
+                        # MOVE UP (N)
+                        if((action == ACTIONS[1]) and (self.environment[x + vision_of_agent, y] > (self.environment[x, y - vision_of_agent] and
+                        self.environment[x, y + vision_of_agent] and self.environment[x - vision_of_agent, y] and self.environment[x, y]))):
+                            #MOVE AGENT TO NEW LOCATION.
+                            self.environment[x + vision_of_agent, y] = list_of_agents[number_of_agents].get_visual()
+                            # AGENT COLLECTS SUGAR.
+                            list_of_agents[number_of_agents].collect_sugar(self.environment[x + vision_of_agent, y])
+                            # CALCULATE AGENT SUGAR HEALTH
+                            list_of_agents[number_of_agents].calculate_s_wealth()
+                            # SUGAR AT LOCATION NOW SET TO 0
+                            self.environment[x + vision_of_agent, y] = 0
+                            # ADD ACTIONS TO ENV ACT
+                            self.env.act(ACTIONS[1], ACTIONS[5])
 
-                # MOVE DOWN
+                        # MOVE DOWN (S)
+                        if((action == ACTIONS[3]) and (self.environment[x - vision_of_agent, y] > (self.environment[x, y + vision_of_agent] and
+                        self.environment[x + vision_of_agent, y] and self.environment[x, y - vision_of_agent] and self.environment[x, y]))):
+                            #MOVE AGENT TO NEW LOCATION.
+                            self.environment[x - vision_of_agent, y] = list_of_agents[number_of_agents].get_visual()
+                            # AGENT COLLECTS SUGAR.
+                            list_of_agents[number_of_agents].collect_sugar(self.environment[x - vision_of_agent, y])
+                            # CALCULATE AGENT SUGAR HEALTH
+                            list_of_agents[number_of_agents].calculate_s_wealth()
+                            # SUGAR AT LOCATION NOW SET TO 0
+                            self.environment[x - vision_of_agent, y] = 0
+                            # ADD ACTIONS TO ENV ACT
+                            self.env.act(ACTIONS[3], ACTIONS[5])
 
-            number_of_agents = number_of_agents + 1
-            # action_type = ACTION_LOOKUP[action[0]]
-            # if action_type == hfo_py.DASH:
-            #     self.env.act(action_type, action[1], action[2])
-            # elif action_type == hfo_py.TURN:
-            #     self.env.act(action_type, action[3])
-            # elif action_type == hfo_py.KICK:
-            #     self.env.act(action_type, action[4], action[5])
-            # else:
-            #     print('Unrecognized action %d' % action_type)
-            #     self.env.act(hfo_py.NOOP)
+                        # MOVE LEFT (W)
+                        if((action == ACTIONS[4]) and (self.environment[x, y - vision_of_agent] > (self.environment[x, y + vision_of_agent] and
+                        self.environment[x + vision_of_agent, y] and self.environment[x - vision_of_agent, y] and self.environment[x, y]))):
+                            #MOVE AGENT TO NEW LOCATION.
+                            self.environment[x, y - vision_of_agent] = list_of_agents[number_of_agents].get_visual()
+                            # AGENT COLLECTS SUGAR.
+                            list_of_agents[number_of_agents].collect_sugar(self.environment[x, y - vision_of_agent])
+                            # CALCULATE AGENT SUGAR HEALTH
+                            list_of_agents[number_of_agents].calculate_s_wealth()
+                            # SUGAR AT LOCATION NOW SET TO 0
+                            self.environment[x, y - vision_of_agent] = 0
+                            # ADD ACTIONS TO ENV ACT
+                            self.env.act(ACTIONS[3], ACTIONS[5])
 
+
+                        # MOVE RIGHT (E)
+                        if((action == ACTIONS[2]) and (self.environment[x, y + vision_of_agent] > (self.environment[x, y - vision_of_agent] and
+                        self.environment[x + vision_of_agent, y] and self.environment[x - vision_of_agent, y] and self.environment[x, y]))):
+                            #MOVE AGENT TO NEW LOCATION.
+                            self.environment[x, y + vision_of_agent] = list_of_agents[number_of_agents].get_visual()
+                            # AGENT COLLECTS SUGAR.
+                            list_of_agents[number_of_agents].collect_sugar(self.environment[x, y + vision_of_agent])
+                            # CALCULATE AGENT SUGAR HEALTH
+                            list_of_agents[number_of_agents].calculate_s_wealth()
+                            # SUGAR AT LOCATION NOW SET TO 0
+                            self.environment[x, y + vision_of_agent] = 0
+                            # ADD ACTIONS TO ENV ACT
+                            self.env.act(ACTIONS[2], ACTIONS[5])
+
+
+            #number_of_agents = number_of_agents + 1
 
     def _get_reward(self):
         """ Reward is given for scoring a goal. """
@@ -127,6 +167,7 @@ class SugarscapeEnv(gym.Env):
         number_of_agents = 0
         test_loop = 0
         global list_of_agents
+        global list_of_agents_dict
 
         # Creating 250 agent objects and putting them into the list_of_agents array.
         for i in range(250):
@@ -144,10 +185,11 @@ class SugarscapeEnv(gym.Env):
             y = random.randrange(50)
             if(self.environment[x, y] == 0):
                 self.environment[x, y] = list_of_agents[number_of_agents].get_visual()
+                list_of_agents_dict[number_of_agents] = list_of_agents[number_of_agents]
                 number_of_agents = number_of_agents + 1
 
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
-
+        print(list_of_agents_dict)
 
     def render(self, mode = 'human'):
         # Render the environment to the screen.
