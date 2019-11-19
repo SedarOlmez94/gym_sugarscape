@@ -57,6 +57,40 @@ class SugarscapeEnv(gym.Env):
         """
         print("")
 
+
+    def _step(self, action):
+        # agent takes an action
+        self._take_action(action)
+
+        self.status = self.env.step()
+        reward = self._get_reward()
+        ob = self.env.getState()
+        episode_over = self.status != hfo_py.IN_GAME
+        return ob, reward, episode_over, {}
+
+    def _take_action(self, action):
+        """ Converts the action space into an HFO action. """
+
+        for i in
+
+        # action_type = ACTION_LOOKUP[action[0]]
+        # if action_type == hfo_py.DASH:
+        #     self.env.act(action_type, action[1], action[2])
+        # elif action_type == hfo_py.TURN:
+        #     self.env.act(action_type, action[3])
+        # elif action_type == hfo_py.KICK:
+        #     self.env.act(action_type, action[4], action[5])
+        # else:
+        #     print('Unrecognized action %d' % action_type)
+        #     self.env.act(hfo_py.NOOP)
+
+    def _get_reward(self):
+        """ Reward is given for scoring a goal. """
+        if self.status == hfo_py.GOAL:
+            return 1
+        else:
+            return 0
+
     def reset(self):
         # Set of initialised variables for each agent.
         self.growth_rate = 1
@@ -84,13 +118,8 @@ class SugarscapeEnv(gym.Env):
                 self.environment[x, y] = list_of_agents[number_of_agents].get_visual()
                 number_of_agents = number_of_agents + 1
 
-        # for i in range(50):
-        #     for j in range(50):
-        #         if(self.environment[i, j] == "X"):
-        #             test_loop = test_loop + 1
 
-
-        print(self.environment)
+        print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
 
     def render(self, mode = 'human'):
