@@ -31,7 +31,7 @@ class Agent:
         self.s_wealth = self.sugar_collected - self.metabolic_rate
 
     def collect_sugar(self, environment_cell_sugar):
-        self.sugar_collected = environment_cell_sugar
+        self.sugar_collected = self.sugar_collected + environment_cell_sugar
 
     def get_ID(self):
         return self.ID

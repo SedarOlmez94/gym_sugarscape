@@ -9,10 +9,12 @@ from agents import Agent
 
 numpy.set_printoptions(threshold=sys.maxsize)
 logger = logging.getLogger(__name__)
+ACTIONS = ["STATIONARY", "N", "E", "S", "W", "EAT"]
+list_of_agents = []
+
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
-    ACTIONS = ["N", "E", "S", "W", "EAT"]
     random.seed(9001)
 
     # Define action and observation space
@@ -70,19 +72,45 @@ class SugarscapeEnv(gym.Env):
 
     def _take_action(self, action):
         """ Converts the action space into an HFO action. """
+        number_of_agents = 0
+        global list_of_agents, ACTIONS
 
-        for i in
+        while(number_of_agents != 250):
+            x = random.randrange(50)
+            y = random.randrange(50)
+            if(self.environment[x, y] == 'X'):
+                vision_of_agent = list_of_agents[number_of_agents].get_vision()
 
-        # action_type = ACTION_LOOKUP[action[0]]
-        # if action_type == hfo_py.DASH:
-        #     self.env.act(action_type, action[1], action[2])
-        # elif action_type == hfo_py.TURN:
-        #     self.env.act(action_type, action[3])
-        # elif action_type == hfo_py.KICK:
-        #     self.env.act(action_type, action[4], action[5])
-        # else:
-        #     print('Unrecognized action %d' % action_type)
-        #     self.env.act(hfo_py.NOOP)
+                # STAY PUT
+
+                # MOVE UP
+                if((action == ACTIONS[1]) and self.environment[x, y + vision_of_agent] > (self.environment[x, y - vision_of_agent] and
+                self.environment[x + vision_of_agent, y] and self.environment[x - vision_of_agent, y])):
+                    #MOVE AGENT TO NEW LOCATION.
+                    self.environment[x, y + vision_of_agent] = list_of_agents[number_of_agents].get_visual()
+                    # AGENT COLLECTS SUGAR.
+                    list_of_agents[number_of_agents].collect_sugar(self.environment[x, y + vision_of_agent])
+                    # CALCULATE AGENT SUGAR HEALTH
+                    list_of_agents[number_of_agents].calculate_s_wealth()
+                    # SUGAR AT LOCATION NOW SET TO 0
+                    self.environment[x, y + vision_of_agent] = 0
+                    # ADD ACTIONS TO ENV ACT
+                    self.env.act(ACTIONS[1], ACTIONS[5])
+
+                # MOVE DOWN
+
+            number_of_agents = number_of_agents + 1
+            # action_type = ACTION_LOOKUP[action[0]]
+            # if action_type == hfo_py.DASH:
+            #     self.env.act(action_type, action[1], action[2])
+            # elif action_type == hfo_py.TURN:
+            #     self.env.act(action_type, action[3])
+            # elif action_type == hfo_py.KICK:
+            #     self.env.act(action_type, action[4], action[5])
+            # else:
+            #     print('Unrecognized action %d' % action_type)
+            #     self.env.act(hfo_py.NOOP)
+
 
     def _get_reward(self):
         """ Reward is given for scoring a goal. """
@@ -96,9 +124,9 @@ class SugarscapeEnv(gym.Env):
         self.growth_rate = 1
         self.environment = numpy.empty((50,50), dtype=numpy.object)
         #self.environment.fill(0)
-        list_of_agents = []
         number_of_agents = 0
         test_loop = 0
+        global list_of_agents
 
         # Creating 250 agent objects and putting them into the list_of_agents array.
         for i in range(250):
@@ -117,7 +145,6 @@ class SugarscapeEnv(gym.Env):
             if(self.environment[x, y] == 0):
                 self.environment[x, y] = list_of_agents[number_of_agents].get_visual()
                 number_of_agents = number_of_agents + 1
-
 
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
