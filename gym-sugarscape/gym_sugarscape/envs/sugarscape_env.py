@@ -281,7 +281,7 @@ class SugarscapeEnv(gym.Env):
         self.environment = numpy.roll(self.environment, 1)
 
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
-
+        print("RESETTED!")
     def render(self, mode = 'human'):
         # Render the environment to the screen.
         print("")
