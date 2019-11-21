@@ -78,9 +78,10 @@ class SugarscapeEnv(gym.Env):
         global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents
 
 
-        while (number_of_agents != 10): #CHANGE TO 250
-            for x in range(51):
-                for y in range(51):
+        #while (number_of_agents != 10): #CHANGE TO 250
+        for x in range(51):
+            for y in range(51):
+                for number_of_agents in range(10):
                 # FOR EACH CELL, CHECK IF AN AGENT OUT OF THE 250 IS STANDING IN THAT CELL.
                     if(self.environment[x, y] == 'X' and list_of_agents_shuffled[number_of_agents].get_ID() == number_of_agents):
                         random_action = random.randrange(1, 4)
@@ -96,13 +97,15 @@ class SugarscapeEnv(gym.Env):
                         # If moving south, north, east or west means coming into contact with another agent
                         # Set that locations sugar to 0
                         if(isinstance(self.environment[x - vision_of_agent, y], str)):
-                            move_south = 0
+                            move_south = int(0)
                         if(isinstance(self.environment[x + vision_of_agent, y], str)):
-                            move_north = 0
+                            move_north = int(0)
                         if(isinstance(self.environment[x, y + vision_of_agent], str)):
-                            move_east = 0
+                            move_east = int(0)
                         if(isinstance(self.environment[x, y - vision_of_agent], str)):
-                            move_west = 0
+                            move_west = int(0)
+
+                        print(move_north, move_east, move_south, move_west)
 
 
                         # MOVE UP (N)
@@ -110,7 +113,7 @@ class SugarscapeEnv(gym.Env):
                             if((self.environment[x + vision_of_agent, y] >= move_south) or
                                 (self.environment[x + vision_of_agent, y] >= move_east) or
                                 (self.environment[x + vision_of_agent, y] >= move_west)):
-                                print(f"{ACTIONS[1]}, {ACTIONS[5]}")
+                                print(f"{ACTIONS[1]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[number_of_agents].get_ID()}")
                                 # AGENT COLLECTS SUGAR.
                                 list_of_agents_shuffled[number_of_agents].collect_sugar(self.environment[x + vision_of_agent, y])
                                 # CALCULATE AGENT SUGAR HEALTH
@@ -123,13 +126,13 @@ class SugarscapeEnv(gym.Env):
                                 # self.environment[x, y] = current_cell_sugar
                                 # ADD ACTIONS TO ENV ACT
 
-
+                        print(self.environment[x - vision_of_agent, y])
                         # MOVE DOWN (S)
                         if(random_action == 3):
                             if((self.environment[x - vision_of_agent, y] >= move_north) or
                                 (self.environment[x - vision_of_agent, y] >= move_east) or
                                 (self.environment[x - vision_of_agent, y] >= move_west)):
-                                print(f"{ACTIONS[3]}, {ACTIONS[5]}")
+                                print(f"{ACTIONS[3]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[number_of_agents].get_ID()}")
                                 # AGENT COLLECTS SUGAR.
                                 list_of_agents_shuffled[number_of_agents].collect_sugar(self.environment[x - vision_of_agent, y])
                                 # CALCULATE AGENT SUGAR HEALTH
@@ -148,7 +151,7 @@ class SugarscapeEnv(gym.Env):
                             if((self.environment[x, y - vision_of_agent] >= move_south) or
                                 (self.environment[x, y - vision_of_agent] >= move_east) or
                                 (self.environment[x, y - vision_of_agent] >= move_north)):
-                                print(f"{ACTIONS[4]}, {ACTIONS[5]}")
+                                print(f"{ACTIONS[4]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[number_of_agents].get_ID()}")
                                 # AGENT COLLECTS SUGAR.
                                 list_of_agents_shuffled[number_of_agents].collect_sugar(self.environment[x, y - vision_of_agent])
                                 # CALCULATE AGENT SUGAR HEALTH
@@ -168,7 +171,7 @@ class SugarscapeEnv(gym.Env):
                             if((self.environment[x, y + vision_of_agent] >= move_south) or
                                 (self.environment[x, y + vision_of_agent] >= move_west) or
                                 (self.environment[x, y + vision_of_agent] >= move_north)):
-                                print(f"{ACTIONS[2]}, {ACTIONS[5]}")
+                                print(f"{ACTIONS[2]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[number_of_agents].get_ID()}")
                                 # AGENT COLLECTS SUGAR.
                                 list_of_agents_shuffled[number_of_agents].collect_sugar(self.environment[x, y + vision_of_agent])
                                 # CALCULATE AGENT SUGAR HEALTH
@@ -182,7 +185,7 @@ class SugarscapeEnv(gym.Env):
                                 # ADD ACTIONS TO ENV ACT
 
 
-            number_of_agents = number_of_agents + 1
+            #number_of_agents = number_of_agents + 1
 
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
