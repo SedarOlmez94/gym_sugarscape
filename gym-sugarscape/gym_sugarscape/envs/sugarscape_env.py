@@ -126,7 +126,7 @@ class SugarscapeEnv(gym.Env):
                                 #MOVE AGENT TO NEW LOCATION.
                                 self.environment[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
                                 # SET PREVIOUS POSITION CELL TO 0 sugar
-                                #self.environment[x, y] = 0
+                                self.environment[x, y] = 0
                                 # ADD ACTIONS TO ENV ACT
 
                             else:
@@ -137,7 +137,7 @@ class SugarscapeEnv(gym.Env):
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[(x + vision_of_agent) % 51, y] = 0
                                     self.environment[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
 
                                 elif random_move == 2:
                                     print(f"{ACTIONS[2]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
@@ -145,21 +145,21 @@ class SugarscapeEnv(gym.Env):
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[x, (y + vision_of_agent) % 51] = 0
                                     self.environment[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
                                 elif random_move == 3:
                                     print(f"{ACTIONS[3]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                     list_of_agents_shuffled[agents_iteration].collect_sugar(move_south)
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[(x - vision_of_agent) % 51, y] = 0
                                     self.environment[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
                                 else:
                                     print(f"{ACTIONS[4]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                     list_of_agents_shuffled[agents_iteration].collect_sugar(move_west)
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[x, (y - vision_of_agent) % 51] = 0
                                     self.environment[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
 
 
                         # MOVE DOWN (S)
@@ -177,7 +177,7 @@ class SugarscapeEnv(gym.Env):
                                 #MOVE AGENT TO NEW LOCATION.
                                 self.environment[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
                                 # SET PREVIOUS POSITION CELL TO 0 sugar
-                                #self.environment[x, y] = 0
+                                self.environment[x, y] = 0
                                 # ADD ACTIONS TO ENV ACT
 
                             else:
@@ -188,7 +188,7 @@ class SugarscapeEnv(gym.Env):
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[(x + vision_of_agent) % 51, y] = 0
                                     self.environment[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
 
                                 elif random_move == 2:
                                     print(f"{ACTIONS[2]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
@@ -196,21 +196,21 @@ class SugarscapeEnv(gym.Env):
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[x, (y + vision_of_agent) % 51] = 0
                                     self.environment[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
                                 elif random_move == 3:
                                     print(f"{ACTIONS[3]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                     list_of_agents_shuffled[agents_iteration].collect_sugar(move_south)
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[(x - vision_of_agent) % 51, y] = 0
                                     self.environment[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
                                 else:
                                     print(f"{ACTIONS[4]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                     list_of_agents_shuffled[agents_iteration].collect_sugar(move_west)
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[x, (y - vision_of_agent) % 51] = 0
                                     self.environment[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
 
 
                         # MOVE LEFT (W)
@@ -228,7 +228,7 @@ class SugarscapeEnv(gym.Env):
                                 #MOVE AGENT TO NEW LOCATION.
                                 self.environment[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
                                 # SET PREVIOUS POSITION CELL TO 0 sugar
-                                #self.environment[x, y] = 0
+                                self.environment[x, y] = 0
                                 # ADD ACTIONS TO ENV ACT
 
                             else:
@@ -239,7 +239,7 @@ class SugarscapeEnv(gym.Env):
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[(x + vision_of_agent) % 51, y] = 0
                                     self.environment[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
 
                                 elif random_move == 2:
                                     print(f"{ACTIONS[2]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
@@ -247,21 +247,21 @@ class SugarscapeEnv(gym.Env):
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[x, (y + vision_of_agent) % 51] = 0
                                     self.environment[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
                                 elif random_move == 3:
                                     print(f"{ACTIONS[3]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                     list_of_agents_shuffled[agents_iteration].collect_sugar(move_south)
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[(x - vision_of_agent) % 51, y] = 0
                                     self.environment[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
                                 else:
                                     print(f"{ACTIONS[4]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                     list_of_agents_shuffled[agents_iteration].collect_sugar(move_west)
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[x, (y - vision_of_agent) % 51] = 0
                                     self.environment[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
 
 
                         # MOVE RIGHT (E)
@@ -279,7 +279,7 @@ class SugarscapeEnv(gym.Env):
                                 #MOVE AGENT TO NEW LOCATION.
                                 self.environment[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
                                 # SET PREVIOUS POSITION CELL TO 0 sugar
-                                #self.environment[x, y] = 0
+                                self.environment[x, y] = 0
                                 # ADD ACTIONS TO ENV ACT
 
                             else:
@@ -290,7 +290,7 @@ class SugarscapeEnv(gym.Env):
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[(x + vision_of_agent) % 51, y] = 0
                                     self.environment[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
 
                                 elif random_move == 2:
                                     print(f"{ACTIONS[2]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
@@ -298,23 +298,24 @@ class SugarscapeEnv(gym.Env):
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[x, (y + vision_of_agent) % 51] = 0
                                     self.environment[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
                                 elif random_move == 3:
                                     print(f"{ACTIONS[3]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                     list_of_agents_shuffled[agents_iteration].collect_sugar(move_south)
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[(x - vision_of_agent) % 51, y] = 0
                                     self.environment[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
                                 else:
                                     print(f"{ACTIONS[4]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                     list_of_agents_shuffled[agents_iteration].collect_sugar(move_west)
                                     list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
                                     self.environment[x, (y - vision_of_agent) % 51] = 0
                                     self.environment[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-
+                                    self.environment[x, y] = 0
 
                         agents_iteration = agents_iteration + 1
+
 
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
