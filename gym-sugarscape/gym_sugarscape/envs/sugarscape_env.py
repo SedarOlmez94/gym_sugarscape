@@ -213,7 +213,11 @@ class SugarscapeEnv(gym.Env):
 
 
     def _get_reward(self):
-        """ If all agents have positive s_wealth then reward 1 else 0"""
+        """
+        If all agents have positive s_wealth then reward 1 else 0
+        therefore, the Q-learning algorithm will try learn how each agent can
+        move to have positive s_wealth each iteration.
+        """
         global number_of_agents
 
         while(number_of_agents != 10):
@@ -283,9 +287,17 @@ class SugarscapeEnv(gym.Env):
         else:
             return 'SOME AGENTS STILL ALIVE'
 
+
     def _get_state(self):
         return self.environment
 
+
+    def _agents_die(self):
+        """
+            total_simulation_runs increments by 1 each iteration of the simulation
+            when the total_simulation_runs == agents.age then agent dies and
+            a new agent appears in a random location on the environment.
+        """
 
 x = SugarscapeEnv()
 x._reset()
