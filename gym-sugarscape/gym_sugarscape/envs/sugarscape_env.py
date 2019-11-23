@@ -129,7 +129,7 @@ class SugarscapeEnv(gym.Env):
                                 self.environment_duplicate[(x + vision_of_agent) % 51, y] = 0
                                 #MOVE AGENT TO NEW LOCATION.
                                 self.environment[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-                                self.environment_duplicate[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
+                                self.environment_duplicate[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration]
                                 # SET PREVIOUS POSITION CELL TO 0 sugar
                                 self.environment[x, y] = 0
                                 self.environment_duplicate[x, y] = 0
@@ -154,7 +154,7 @@ class SugarscapeEnv(gym.Env):
                                 self.environment_duplicate[(x - vision_of_agent) % 51, y] = 0
                                 #MOVE AGENT TO NEW LOCATION.
                                 self.environment[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-                                self.environment_duplicate[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
+                                self.environment_duplicate[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration]
                                 # SET PREVIOUS POSITION CELL TO 0 sugar
                                 self.environment[x, y] = 0
                                 self.environment_duplicate[x, y] = 0
@@ -179,7 +179,7 @@ class SugarscapeEnv(gym.Env):
                                 self.environment_duplicate[x, (y - vision_of_agent) % 51] = 0
                                 #MOVE AGENT TO NEW LOCATION.
                                 self.environment[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-                                self.environment_duplicate[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
+                                self.environment_duplicate[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration]
                                 # SET PREVIOUS POSITION CELL TO 0 sugar
                                 self.environment[x, y] = 0
                                 self.environment_duplicate[x, y] = 0
@@ -204,7 +204,7 @@ class SugarscapeEnv(gym.Env):
                                 self.environment_duplicate[x, (y + vision_of_agent) % 51] = 0
                                 #MOVE AGENT TO NEW LOCATION.
                                 self.environment[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-                                self.environment_duplicate[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
+                                self.environment_duplicate[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration]
                                 # SET PREVIOUS POSITION CELL TO 0 sugar
                                 self.environment[x, y] = 0
                                 self.environment_duplicate[x, y] = 0
@@ -228,7 +228,7 @@ class SugarscapeEnv(gym.Env):
             self.environment[(x + vision_of_agent) % 51, y] = 0
             self.environment_duplicate[(x + vision_of_agent) % 51, y] = 0
             self.environment[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-            self.environment_duplicate[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
+            self.environment_duplicate[(x + vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration]
             self.environment[x, y] = 0
             self.environment_duplicate[x, y] = 0
 
@@ -240,7 +240,7 @@ class SugarscapeEnv(gym.Env):
             self.environment[x, (y + vision_of_agent) % 51] = 0
             self.environment_duplicate[x, (y + vision_of_agent) % 51] = 0
             self.environment[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-            self.environment_duplicate[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
+            self.environment_duplicate[x, (y + vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration]
             self.environment[x, y] = 0
             self.environment_duplicate[x, y] = 0
 
@@ -252,7 +252,7 @@ class SugarscapeEnv(gym.Env):
             self.environment[(x - vision_of_agent) % 51, y] = 0
             self.environment_duplicate[(x - vision_of_agent) % 51, y] = 0
             self.environment[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
-            self.environment_duplicate[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration].get_visual()
+            self.environment_duplicate[(x - vision_of_agent) % 51, y] = list_of_agents_shuffled[agents_iteration]
             self.environment[x, y] = 0
             self.environment_duplicate[x, y] = 0
 
@@ -264,7 +264,7 @@ class SugarscapeEnv(gym.Env):
             self.environment[x, (y - vision_of_agent) % 51] = 0
             self.environment_duplicate[x, (y - vision_of_agent) % 51] = 0
             self.environment[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
-            self.environment_duplicate[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration].get_visual()
+            self.environment_duplicate[x, (y - vision_of_agent) % 51] = list_of_agents_shuffled[agents_iteration]
             self.environment[x, y] = 0
             self.environment_duplicate[x, y] = 0
 
@@ -323,12 +323,18 @@ class SugarscapeEnv(gym.Env):
                 list_of_agents_shuffled[number_of_agents] = list_of_agents[number_of_agents]
                 number_of_agents = number_of_agents + 1
 
-        print(self.environment)
+
     def _close(self):
         print("")
 
 
     def _get_status(self):
+        """
+            count the environment cells. If there are no X's on the environment
+            then count these cells, if the total number of cells in the environment
+            is the max size of the cells then all agents have died, else some agents
+            are still alive.
+        """
         counter = 0
         for i in range(51):
             for j in range(51):
@@ -369,16 +375,20 @@ class SugarscapeEnv(gym.Env):
                 del list_of_agents_shuffled[i]
                 # An agent is being deleted from the environment.
                 agent_dead = True
-
+                number_of_agents_in_list = number_of_agents_in_list - 1
 
         if(agent_dead == True):
             # Remove the agent from the list.
-            for j in range(number_of_agents_in_list):
-                if agent_to_die == list_of_agents[j].get_ID():
+            for i in range(number_of_agents_in_list):
+                if agent_to_die == list_of_agents[i].get_ID():
                     del list_of_agents[i]
+
+
 
             # Create a new agent and add it to the list_of_agents list.
             list_of_agents.append(Agent(random_ID))
+            # Add new agent to dictionary.
+            list_of_agents_shuffled[number_of_agents_in_list] = list_of_agents[number_of_agents_in_list]
 
 
             # Replace the agent in the Environment with the new agent.
@@ -387,10 +397,13 @@ class SugarscapeEnv(gym.Env):
                     if(self.environment[x, y] == 'X' and self.environment_duplicate[x, y].get_ID() == agent_to_die):
                         # Add new agent to environment where old agent died.
                         self.environment[x, y] = list_of_agents[number_of_agents_in_list].get_visual()
-                        self.environment_duplicate = list_of_agents[number_of_agents_in_list]
+                        self.environment_duplicate[x, y] = list_of_agents[number_of_agents_in_list]
 
-            # Add new agent to dictionary.
-            list_of_agents_shuffled[number_of_agents_in_list] = list_of_agents[number_of_agents_in_list]
+            number_of_agents_in_list += 1
+
+
+
+
 
 
 x = SugarscapeEnv()
@@ -401,3 +414,17 @@ x._step('S')
 x._step('N')
 x._step('E')
 x._step('S')
+x._step('N')
+x._step('E')
+x._step('S')
+x._step('N')
+x._step('E')
+x._step('S')
+x._step('N')
+x._step('E')
+x._step('S')
+x._step('N')
+x._step('E')
+x._step('S')
+x._step('N')
+x._step('E')
