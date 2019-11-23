@@ -39,13 +39,11 @@ class SugarscapeEnv(gym.Env):
     def _step(self, action):
         # agent takes an action
         self._take_action(action)
-        self.status = self._get_status()
-        for i in range(10):
-            reward = self._get_reward(list_of_agents_shuffled[i])
-
-        # ob = self.env.getState()
-        # episode_over = self.status != hfo_py.IN_GAME
-        # return ob, reward, episode_over, {}
+        self.status = self._get_status() # Are all agents still alive or have they all died?
+        reward = self._get_reward() # Have all agents been able to get some sugar?
+        ob = self._get_state() # what is the current state of the environment
+        episode_over = self.status == 'ALL AGENTS DEAD'
+        return ob, reward, episode_over, {}
 
 
     def _take_action(self, action):
@@ -83,7 +81,7 @@ class SugarscapeEnv(gym.Env):
                         if(isinstance(self.environment[x, (y - vision_of_agent) % 51], str)):
                             move_west = int(0)
 
-                        print(move_north, move_east, move_south, move_west)
+                        #print(move_north, move_east, move_south, move_west)
 
 
                         # MOVE UP (N)
@@ -176,7 +174,7 @@ class SugarscapeEnv(gym.Env):
                         agents_iteration = agents_iteration + 1
 
 
-        print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
+        #print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
 
     def _random_move(self, agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent):
@@ -214,14 +212,18 @@ class SugarscapeEnv(gym.Env):
             self.environment[x, y] = 0
 
 
-    def _get_reward(self, agent):
-        """ Reward for each agent is == their s_wealth"""
-        if (agent.get_s_wealth() <= 0):
-            return 0
-        elif(agent.get_s_wealth() == 1):
-            return 1
-        else:
-            return 2
+    def _get_reward(self):
+        """ If all agents have positive s_wealth then reward 1 else 0"""
+        global number_of_agents
+
+        while(number_of_agents != 10):
+
+            if (list_of_agents_shuffled[number_of_agents].get_s_wealth() > 0):
+                return 1
+            else:
+                return 0
+
+            number_of_agents = number_of_agents + 1
 
 
     def _reset(self):
@@ -270,9 +272,23 @@ class SugarscapeEnv(gym.Env):
 
 
     def _get_status(self):
+        counter = 0
+        for i in range(51):
+            for j in range(51):
+                if(self.environment[i, j] != 'X'):
+                    counter = counter + 1
+
+        if(counter == 2601):
+            return 'ALL AGENTS DEAD'
+        else:
+            return 'SOME AGENTS STILL ALIVE'
+
+    def _get_state(self):
         return self.environment
 
 
 x = SugarscapeEnv()
 x._reset()
 x._step('N')
+x._step('E')
+x._step('S')
