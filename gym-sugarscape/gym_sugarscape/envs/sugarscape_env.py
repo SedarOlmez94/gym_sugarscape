@@ -377,13 +377,12 @@ class SugarscapeEnv(gym.Env):
                 agent_dead = True
                 number_of_agents_in_list = number_of_agents_in_list - 1
 
+
         if(agent_dead == True):
             # Remove the agent from the list.
             for i in range(number_of_agents_in_list):
                 if agent_to_die == list_of_agents[i].get_ID():
                     del list_of_agents[i]
-
-
 
             # Create a new agent and add it to the list_of_agents list.
             list_of_agents.append(Agent(random_ID))
