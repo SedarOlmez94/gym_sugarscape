@@ -5,6 +5,11 @@ import logging
 import numpy
 import sys
 import random
+from contextlib import closing
+from six import StringIO
+
+from gym.envs.toy_text import discrete
+
 from agents import Agent
 
 numpy.set_printoptions(threshold=sys.maxsize)
@@ -30,47 +35,15 @@ class SugarscapeEnv(gym.Env):
         self.observation_space = spaces.Discrete(2601)
 
 
-    def step(self, action):
-        #Execute one time step within the environment
-        """
-        Parameters
-        ----------
-        action :
-
-        Returns
-        -------
-        ob, reward, episode_over, info : tuple
-            ob (object) :
-                an environment-specific object representing your observation of
-                the environment.
-            reward (float) :
-                amount of reward achieved by the previous action. The scale
-                varies between environments, but the goal is always to increase
-                your total reward.
-            episode_over (bool) :
-                whether it's time to reset the environment again. Most (but not
-                all) tasks are divided up into well-defined episodes, and done
-                being True indicates the episode has terminated. (For example,
-                perhaps the pole tipped too far, or you lost your last life.)
-            info (dict) :
-                 diagnostic information useful for debugging. It can sometimes
-                 be useful for learning (for example, it might contain the raw
-                 probabilities behind the environment's last state change).
-                 However, official evaluations of your agent are not allowed to
-                 use this for learning.
-        """
-        print("")
-
 
     def _step(self, action):
         # agent takes an action
         self._take_action(action)
-
-        # self.status = self.env.step()
-        # reward = self._get_reward()
-        # ob = self.env.getState()
-        # episode_over = self.status != hfo_py.IN_GAME
-        # return ob, reward, episode_over, {}
+        self.status = self._get_status() # Are all agents still alive or have they all died?
+        reward = self._get_reward() # Have all agents been able to get some sugar?
+        ob = self._get_state() # what is the current state of the environment
+        episode_over = self.status == 'ALL AGENTS DEAD'
+        return ob, reward, episode_over, {}
 
 
     def _take_action(self, action):
@@ -108,11 +81,11 @@ class SugarscapeEnv(gym.Env):
                         if(isinstance(self.environment[x, (y - vision_of_agent) % 51], str)):
                             move_west = int(0)
 
-                        print(move_north, move_east, move_south, move_west)
+                        #print(move_north, move_east, move_south, move_west)
 
 
                         # MOVE UP (N)
-                        if(random_action == 1):
+                        if(action == 'N'):
                             if((move_north >= move_south) and
                                 (move_north >= move_east) and
                                 (move_north >= move_west)):
@@ -130,11 +103,11 @@ class SugarscapeEnv(gym.Env):
                                 # ADD ACTIONS TO ENV ACT
 
                             else:
-                                self.random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
+                                self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
 
 
                         # MOVE DOWN (S)
-                        if(random_action == 3):
+                        if(action == 'S'):
                             if((move_south >= move_north) and
                                 (move_south >= move_east) and
                                 (move_south >= move_west)):
@@ -152,11 +125,11 @@ class SugarscapeEnv(gym.Env):
                                 # ADD ACTIONS TO ENV ACT
 
                             else:
-                                self.random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
+                                self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
 
 
                         # MOVE LEFT (W)
-                        if(random_action == 4):
+                        if(action == 'W'):
                             if((move_west >= move_south) and
                                 (move_west >= move_east) and
                                 (move_west >= move_north)):
@@ -174,11 +147,11 @@ class SugarscapeEnv(gym.Env):
                                 # ADD ACTIONS TO ENV ACT
 
                             else:
-                                self.random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
+                                self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
 
 
                         # MOVE RIGHT (E)
-                        if(random_action == 2):
+                        if(action == 'E'):
                             if((move_east >= move_south) or
                                 (move_east >= move_west) or
                                 (move_east >= move_north)):
@@ -196,15 +169,15 @@ class SugarscapeEnv(gym.Env):
                                 # ADD ACTIONS TO ENV ACT
 
                             else:
-                                self.random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
+                                self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
 
                         agents_iteration = agents_iteration + 1
 
 
-        print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
+        #print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
 
-    def random_move(self, agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent):
+    def _random_move(self, agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent):
         global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents
 
         random_move = random.randrange(1, 4)
@@ -240,13 +213,20 @@ class SugarscapeEnv(gym.Env):
 
 
     def _get_reward(self):
-        """ Reward is given for scoring a goal. """
-        if self.status == hfo_py.GOAL:
-            return 1
-        else:
-            return 0
+        """ If all agents have positive s_wealth then reward 1 else 0"""
+        global number_of_agents
 
-    def reset(self):
+        while(number_of_agents != 10):
+
+            if (list_of_agents_shuffled[number_of_agents].get_s_wealth() > 0):
+                return 1
+            else:
+                return 0
+
+            number_of_agents = number_of_agents + 1
+
+
+    def _reset(self):
         # Set of initialised variables for each agent.
         self.growth_rate = 1
         self.environment = numpy.empty((51,51), dtype=numpy.object)
@@ -280,26 +260,35 @@ class SugarscapeEnv(gym.Env):
 
         self.environment = numpy.roll(self.environment, 1)
 
-        print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
-        print("RESETTED!")
-    def render(self, mode = 'human'):
+        #print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
+
+    def _render(self, mode = 'human'):
         # Render the environment to the screen.
         print("")
 
-    def close(self):
+
+    def _close(self):
         print("")
 
-    def _get_reward(self):
-        """
-        Get a reward for XY.
-        """
-        if self.status == something:
-            return 1
-        elif self.status == ABC:
-            return self.somestate ** 2
+
+    def _get_status(self):
+        counter = 0
+        for i in range(51):
+            for j in range(51):
+                if(self.environment[i, j] != 'X'):
+                    counter = counter + 1
+
+        if(counter == 2601):
+            return 'ALL AGENTS DEAD'
         else:
-            return 0
+            return 'SOME AGENTS STILL ALIVE'
+
+    def _get_state(self):
+        return self.environment
+
 
 x = SugarscapeEnv()
-x.reset()
+x._reset()
 x._step('N')
+x._step('E')
+x._step('S')
