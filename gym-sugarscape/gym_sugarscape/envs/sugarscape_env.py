@@ -373,17 +373,18 @@ class SugarscapeEnv(gym.Env):
                 """Remove the agent from the list of agents"""
                 agent_to_die = list_of_agents_shuffled[i].get_ID()
                 del list_of_agents_shuffled[i]
+                del list_of_agents[i]
                 # An agent is being deleted from the environment.
                 agent_dead = True
                 number_of_agents_in_list = number_of_agents_in_list - 1
 
 
         if(agent_dead == True):
+            print("AGENT DEAD!")
             # Remove the agent from the list.
             for i in range(number_of_agents_in_list):
                 if agent_to_die == list_of_agents[i].get_ID():
                     del list_of_agents[i]
-
             # Create a new agent and add it to the list_of_agents list.
             list_of_agents.append(Agent(random_ID))
             # Add new agent to dictionary.
@@ -398,9 +399,10 @@ class SugarscapeEnv(gym.Env):
                         self.environment[x, y] = list_of_agents[number_of_agents_in_list].get_visual()
                         self.environment_duplicate[x, y] = list_of_agents[number_of_agents_in_list]
 
+
             number_of_agents_in_list += 1
 
-
+            print(f"size of list: {len(list_of_agents)} and size of dictionary {len(list_of_agents_shuffled)}")
 
 
 
@@ -426,4 +428,10 @@ x._step('N')
 x._step('E')
 x._step('S')
 x._step('N')
+x._step('N')
 x._step('E')
+x._step('S')
+x._step('N')
+x._step('E')
+x._step('S')
+x._step('N')
