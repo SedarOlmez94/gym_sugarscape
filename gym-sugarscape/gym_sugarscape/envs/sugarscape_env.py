@@ -5,10 +5,9 @@ import logging
 import numpy
 import sys
 import random
-from contextlib import closing
 from six import StringIO
-from gym.envs.toy_text import discrete
 from agents import Agent
+from IPython.display import Markdown, display
 
 
 numpy.set_printoptions(threshold=sys.maxsize)
@@ -23,9 +22,6 @@ size_of_environment = 0
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
     random.seed(9001)
-    # Define action and observation space
-    # They must be gym.spaces objects
-    # Example when using discrete actions:
 
 
     def __init__(self):
@@ -94,7 +90,7 @@ class SugarscapeEnv(gym.Env):
                 # FOR EACH CELL, CHECK IF AN AGENT OUT OF THE 250 IS STANDING IN THAT CELL.
                 if agents_iteration < number_of_agents_in_list:
 
-                    if(self.environment[x, y] == 'X' and list_of_agents_shuffled[agents_iteration].get_ID() == agents_iteration):
+                    if(self.environment[x, y] == "\033[1mX\033[0m" and list_of_agents_shuffled[agents_iteration].get_ID() == agents_iteration):
                         #print(f"agend ID: {list_of_agents_shuffled[agents_iteration].get_ID()} and iteration {agents_iteration}")
                         #current_cell_sugar = self.environment[x, y]
 
@@ -347,12 +343,17 @@ class SugarscapeEnv(gym.Env):
             return 'SOME AGENTS STILL ALIVE'
 
 
-    def _get_state(self):
+    def render(self):
         """
             Prints the state of the environment 2D grid
         """
         #counter = 0
         # Render the environment to the screen.
+        # for i in range(size_of_environment):
+        #     for j in range(size_of_environment):
+        #         if(self.environment[i, j] == "X"):
+        #             self.environment[i, j] = "\033[1mX\033[0m"
+
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
         """TEST"""
@@ -413,18 +414,10 @@ class SugarscapeEnv(gym.Env):
             # Replace the agent in the Environment with the new agent.
             for x in range(size_of_environment):
                 for y in range(size_of_environment):
-                    if(self.environment[x, y] == 'X' and self.environment_duplicate[x, y].get_ID() == agent_to_die):
+                    if(self.environment[x, y] == "\033[1mX\033[0m" and self.environment_duplicate[x, y].get_ID() == agent_to_die):
                         # Add new agent to environment where old agent died.
                         self.environment[x, y] = list_of_agents[number_of_agents_in_list].get_visual()
                         self.environment_duplicate[x, y] = list_of_agents[number_of_agents_in_list]
 
 
             number_of_agents_in_list += 1
-
-
-x = SugarscapeEnv()
-x._reset(10, 50) # 50 by 50 grid and 10 agents.
-print(x._step('N'))
-print(x._step('E'))
-print(x._step('S'))
-x._get_state()

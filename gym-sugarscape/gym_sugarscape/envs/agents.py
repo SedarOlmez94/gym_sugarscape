@@ -1,4 +1,6 @@
 import random
+from IPython.display import Markdown, display
+
 random.seed(9001)
 
 class Agent:
@@ -10,7 +12,7 @@ class Agent:
         self.s_wealth = random.randrange(5, 25)
         self.sugar_collected = 0
         self.ID = ID
-        self.visual = "X"
+        self.visual = "\033[1mX\033[0m"
 
     def get_vision(self):
         return self.vision
