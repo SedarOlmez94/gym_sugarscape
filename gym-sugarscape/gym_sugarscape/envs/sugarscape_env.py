@@ -17,7 +17,7 @@ list_of_agents = []
 list_of_agents_shuffled = {}
 number_of_agents_in_list = 10
 size_of_environment = 0
-
+observation_space_calculated = 0
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -27,11 +27,13 @@ class SugarscapeEnv(gym.Env):
     def __init__(self):
         super(SugarscapeEnv, self).__init__()
         self.action_space = spaces.Discrete(5) #Number of applicable actions
-        self.observation_space = spaces.Discrete(size_of_environment * size_of_environment)
+        self.observation_space = spaces.Discrete(observation_space_calculated * observation_space_calculated)
+
         self.current_step = 0
 
 
-    def _step(self, action):
+
+    def step(self, action):
         """
 
         Parameters
@@ -67,7 +69,6 @@ class SugarscapeEnv(gym.Env):
         self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
         self.status = self._get_status() # Are all agents still alive or have they all died?
         reward = self._get_reward() # Have all agents been able to get some sugar?
-        ob = self.current_step # what is the current state of the environment
         episode_over = self.status == 'ALL AGENTS DEAD' # Have all the agents died?
         return self.current_step, reward, episode_over, {} # Return the ob, reward, episode_over and {}
 
@@ -120,7 +121,6 @@ class SugarscapeEnv(gym.Env):
                             if((move_north >= move_south) and
                                 (move_north >= move_east) and
                                 (move_north >= move_west)):
-                                print(f"{ACTIONS[1]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                 # AGENT COLLECTS SUGAR.
                                 list_of_agents_shuffled[agents_iteration].collect_sugar(move_north)
                                 # CALCULATE AGENT SUGAR HEALTH
@@ -145,7 +145,6 @@ class SugarscapeEnv(gym.Env):
                             if((move_south >= move_north) and
                                 (move_south >= move_east) and
                                 (move_south >= move_west)):
-                                print(f"{ACTIONS[3]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                 # AGENT COLLECTS SUGAR.
                                 list_of_agents_shuffled[agents_iteration].collect_sugar(move_south)
                                 # CALCULATE AGENT SUGAR HEALTH
@@ -170,7 +169,6 @@ class SugarscapeEnv(gym.Env):
                             if((move_west >= move_south) and
                                 (move_west >= move_east) and
                                 (move_west >= move_north)):
-                                print(f"{ACTIONS[4]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                 # AGENT COLLECTS SUGAR.
                                 list_of_agents_shuffled[agents_iteration].collect_sugar(move_west)
                                 # CALCULATE AGENT SUGAR HEALTH
@@ -195,7 +193,6 @@ class SugarscapeEnv(gym.Env):
                             if((move_east >= move_south) or
                                 (move_east >= move_west) or
                                 (move_east >= move_north)):
-                                print(f"{ACTIONS[2]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
                                 # AGENT COLLECTS SUGAR.
                                 list_of_agents_shuffled[agents_iteration].collect_sugar(move_east)
                                 # CALCULATE AGENT SUGAR HEALTH
@@ -223,7 +220,6 @@ class SugarscapeEnv(gym.Env):
 
 
         if random_move == 1:
-            print(f"{ACTIONS[1]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
             list_of_agents_shuffled[agents_iteration].collect_sugar(move_north)
             list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
             self.environment[(x + vision_of_agent) % size_of_environment, y] = 0
@@ -235,7 +231,6 @@ class SugarscapeEnv(gym.Env):
 
 
         elif random_move == 2:
-            print(f"{ACTIONS[2]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
             list_of_agents_shuffled[agents_iteration].collect_sugar(move_east)
             list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
             self.environment[x, (y + vision_of_agent) % size_of_environment] = 0
@@ -247,7 +242,6 @@ class SugarscapeEnv(gym.Env):
 
 
         elif random_move == 3:
-            print(f"{ACTIONS[3]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
             list_of_agents_shuffled[agents_iteration].collect_sugar(move_south)
             list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
             self.environment[(x - vision_of_agent) % size_of_environment, y] = 0
@@ -259,7 +253,6 @@ class SugarscapeEnv(gym.Env):
 
 
         else:
-            print(f"{ACTIONS[4]}, {ACTIONS[5]} by agent: {list_of_agents_shuffled[agents_iteration].get_ID()}")
             list_of_agents_shuffled[agents_iteration].collect_sugar(move_west)
             list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
             self.environment[x, (y - vision_of_agent) % size_of_environment] = 0
@@ -288,10 +281,11 @@ class SugarscapeEnv(gym.Env):
             number_of_agents = number_of_agents + 1
 
 
-    def _reset(self, number_of_agents_in_list_local, size_of_environment_local):
-        global number_of_agents_in_list, list_of_agents, list_of_agents_shuffled, size_of_environment
+    def reset(self, number_of_agents_in_list_local, size_of_environment_local):
+        global number_of_agents_in_list, list_of_agents, list_of_agents_shuffled, size_of_environment, observation_space_calculated
         number_of_agents_in_list = number_of_agents_in_list_local
         size_of_environment = size_of_environment_local
+        observation_space_calculated = size_of_environment_local
         number_of_agents = 0
         # Reset the state of the environment to an initial state
         self.growth_rate = 1
@@ -343,25 +337,12 @@ class SugarscapeEnv(gym.Env):
             return 'SOME AGENTS STILL ALIVE'
 
 
-    def render(self):
+    def render(self, mode='human', close=False):
         """
             Prints the state of the environment 2D grid
         """
-        #counter = 0
-        # Render the environment to the screen.
-        # for i in range(size_of_environment):
-        #     for j in range(size_of_environment):
-        #         if(self.environment[i, j] == "X"):
-        #             self.environment[i, j] = "\033[1mX\033[0m"
 
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
-
-        """TEST"""
-        # for i in range(size_of_environment):
-        #     for j in range(size_of_environment):
-        #         if(self.environment[i, j] == 'X'):
-        #             counter = counter + 1
-        # print(counter)
 
 
     def _agent_s_wealth(self):
@@ -369,7 +350,7 @@ class SugarscapeEnv(gym.Env):
             Returns the agents information each iteration of the simulation. ID, SUGAR WEALTH and AGE
         """
         for i in range(number_of_agents_in_list):
-            print(f"AGENT: {list_of_agents_shuffled[i].get_ID()}, WEALTH: {list_of_agents_shuffled[i].get_s_wealth()}, AGE: {list_of_agents_shuffled[i].get_age()}")
+            print("Agent %s is of age %s and has sugar wealth %s" % (list_of_agents_shuffled[i].get_ID(),list_of_agents_shuffled[i].get_age(), list_of_agents_shuffled[i].get_s_wealth()))
 
 
     def _agents_die(self):
