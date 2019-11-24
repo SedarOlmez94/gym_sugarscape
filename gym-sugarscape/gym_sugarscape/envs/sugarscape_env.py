@@ -31,7 +31,7 @@ class SugarscapeEnv(gym.Env):
         self.current_step = 0
 
 
-    def _step(self, action):
+    def step(self, action):
         """
 
         Parameters
@@ -280,7 +280,7 @@ class SugarscapeEnv(gym.Env):
             number_of_agents = number_of_agents + 1
 
 
-    def _reset(self, number_of_agents_in_list_local, size_of_environment_local):
+    def reset(self, number_of_agents_in_list_local, size_of_environment_local):
         global number_of_agents_in_list, list_of_agents, list_of_agents_shuffled, size_of_environment
         number_of_agents_in_list = number_of_agents_in_list_local
         size_of_environment = size_of_environment_local
@@ -339,21 +339,8 @@ class SugarscapeEnv(gym.Env):
         """
             Prints the state of the environment 2D grid
         """
-        #counter = 0
-        # Render the environment to the screen.
-        # for i in range(size_of_environment):
-        #     for j in range(size_of_environment):
-        #         if(self.environment[i, j] == "X"):
-        #             self.environment[i, j] = "\033[1mX\033[0m"
 
         print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
-
-        """TEST"""
-        # for i in range(size_of_environment):
-        #     for j in range(size_of_environment):
-        #         if(self.environment[i, j] == 'X'):
-        #             counter = counter + 1
-        # print(counter)
 
 
     def _agent_s_wealth(self):
