@@ -17,7 +17,7 @@ list_of_agents = []
 list_of_agents_shuffled = {}
 number_of_agents_in_list = 10
 size_of_environment = 0
-observation_space_calculated = 0
+
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -27,8 +27,7 @@ class SugarscapeEnv(gym.Env):
     def __init__(self):
         super(SugarscapeEnv, self).__init__()
         self.action_space = spaces.Discrete(5) #Number of applicable actions
-        self.observation_space = spaces.Discrete(observation_space_calculated * observation_space_calculated)
-
+        self.observation_space = spaces.Discrete(50 * 50)
         self.current_step = 0
 
 
