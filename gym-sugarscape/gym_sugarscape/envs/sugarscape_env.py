@@ -421,17 +421,3 @@ class SugarscapeEnv(gym.Env):
 
 
             number_of_agents_in_list += 1
-
-
-x = SugarscapeEnv()
-x._reset(10, 50) # 50 by 50 grid and 10 agents.
-print(x._step('N'))
-print(x._step('N'))
-print(x._step('N'))
-print(x._step('E'))
-print(x._step('S'))
-x._get_state()
-print(x._step('W'))
-print(x._step('E'))
-print(x._step('S'))
-x._get_state()
