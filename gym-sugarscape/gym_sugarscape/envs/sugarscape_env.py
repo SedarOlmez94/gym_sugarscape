@@ -343,7 +343,7 @@ class SugarscapeEnv(gym.Env):
             return 'SOME AGENTS STILL ALIVE'
 
 
-    def _get_state(self):
+    def render(self):
         """
             Prints the state of the environment 2D grid
         """
