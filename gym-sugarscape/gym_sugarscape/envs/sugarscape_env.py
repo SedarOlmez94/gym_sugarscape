@@ -17,7 +17,7 @@ ACTIONS = ["STATIONARY", "N", "E", "S", "W", "EAT"]
 list_of_agents = []
 list_of_agents_shuffled = {}
 number_of_agents = 0
-
+number_of_agents_in_list = 10
 
 
 class SugarscapeEnv(gym.Env):
@@ -68,7 +68,7 @@ class SugarscapeEnv(gym.Env):
 
         self._take_action(action)
         self.current_step += 1
-        self._agents_die(10) # Have any agents died? If so replace the dead ones with new ones.
+        self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
         self.status = self._get_status() # Are all agents still alive or have they all died?
         reward = self._get_reward() # Have all agents been able to get some sugar?
         ob = self._get_state() # what is the current state of the environment
@@ -78,15 +78,16 @@ class SugarscapeEnv(gym.Env):
 
     def _take_action(self, action):
         """ One action is performed """
-        global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents
+        global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents_in_list
         agents_iteration = 0
+
 
         #while (number_of_agents != 10): #CHANGE TO 250
         for x in range(51):
             for y in range(51):
                 #while number_of_agents in range(10):
                 # FOR EACH CELL, CHECK IF AN AGENT OUT OF THE 250 IS STANDING IN THAT CELL.
-                if agents_iteration < 10:
+                if agents_iteration < number_of_agents_in_list:
 
                     if(self.environment[x, y] == 'X' and list_of_agents_shuffled[agents_iteration].get_ID() == agents_iteration):
                         #print(f"agend ID: {list_of_agents_shuffled[agents_iteration].get_ID()} and iteration {agents_iteration}")
@@ -217,7 +218,7 @@ class SugarscapeEnv(gym.Env):
 
 
     def _random_move(self, agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent):
-        global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents
+        global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents_in_list
         random_move = random.randrange(1, 4)
 
 
@@ -275,9 +276,9 @@ class SugarscapeEnv(gym.Env):
         therefore, the Q-learning algorithm will try learn how each agent can
         move to have positive s_wealth each iteration.
         """
-        global number_of_agents
+        number_of_agents = 0
 
-        while(number_of_agents != 10):
+        while(number_of_agents != number_of_agents_in_list):
 
             if (list_of_agents_shuffled[number_of_agents].get_s_wealth() > 0):
                 return 1
@@ -287,7 +288,7 @@ class SugarscapeEnv(gym.Env):
             number_of_agents = number_of_agents + 1
 
 
-    def _reset(self):
+    def _reset(self, number_of_agents_in_list_2):
         # Reset the state of the environment to an initial state
         self.growth_rate = 1
         self.environment = numpy.empty((51,51), dtype=numpy.object)
@@ -295,10 +296,11 @@ class SugarscapeEnv(gym.Env):
 
         #self.environment.fill(0)
         number_of_agents = 0
+        global number_of_agents_in_list
         test_loop = 0
         global list_of_agents
         global list_of_agents_shuffled
-
+        number_of_agents_in_list = number_of_agents_in_list_2
 
         # Creating 250 agent objects and putting them into the list_of_agents array.
         for i in range(10): #CHANGE TO 250
@@ -313,7 +315,7 @@ class SugarscapeEnv(gym.Env):
 
 
         # Looping 250 times over the environment and randomly placing agents on 0 sugar cells.
-        while(number_of_agents != 10): #CHANGE TO 250
+        while(number_of_agents != number_of_agents_in_list): #CHANGE TO 250
             x = random.randrange(51)
             y = random.randrange(51)
             if(self.environment[x, y] == 0):
@@ -352,7 +354,7 @@ class SugarscapeEnv(gym.Env):
         return self.environment
 
 
-    def _agents_die(self, number_of_agents_in_list):
+    def _agents_die(self):
         """
             total_simulation_runs increments by 1 each iteration of the simulation
             when the total_simulation_runs == agents.age then agent dies and
@@ -362,17 +364,18 @@ class SugarscapeEnv(gym.Env):
             agent_to_die = the agent whose age is == the frame number
             agent_dead = boolean if agent has died.
         """
-
-        random_ID = random.randrange(20, 100)
         agent_to_die = None
         agent_dead = False
+        global number_of_agents_in_list
 
         # Remove the agents from the dictionary
         for i in range(number_of_agents_in_list):
             if (list_of_agents_shuffled[i].get_age() == self.current_step):
                 """Remove the agent from the list of agents"""
                 agent_to_die = list_of_agents_shuffled[i].get_ID()
+                #print(f"AGENT AGE REMOVED FROM DICTIONARY: {list_of_agents_shuffled[i].get_age()}")
                 del list_of_agents_shuffled[i]
+                key_value_of_agent_dead_in_dictionary = i
                 # An agent is being deleted from the environment.
                 agent_dead = True
                 number_of_agents_in_list = number_of_agents_in_list - 1
@@ -385,12 +388,11 @@ class SugarscapeEnv(gym.Env):
                 if agent_to_die == list_of_agents[i].get_ID():
                     del list_of_agents[i]
 
-
             # Create a new agent and add it to the list_of_agents list.
-            list_of_agents.append(Agent(random_ID))
+            list_of_agents.append(Agent(key_value_of_agent_dead_in_dictionary))
             # Add new agent to dictionary.
-            list_of_agents_shuffled[number_of_agents_in_list] = list_of_agents[number_of_agents_in_list]
-
+            list_of_agents_shuffled[key_value_of_agent_dead_in_dictionary] = list_of_agents[len(list_of_agents) - 1]
+            #print(f"AGENT AGE ADDED TO DICTIONARY: {list_of_agents_shuffled[key_value_of_agent_dead_in_dictionary].get_age()}")
             # Replace the agent in the Environment with the new agent.
             for x in range(51):
                 for y in range(51):
@@ -403,41 +405,42 @@ class SugarscapeEnv(gym.Env):
             number_of_agents_in_list += 1
 
 
-
-
-
-
 x = SugarscapeEnv()
-x._reset()
+x._reset(10)
 x._step('N')
 x._step('E')
 x._step('S')
 x._step('N')
 x._step('E')
-x._step('S')
 x._step('N')
 x._step('E')
 x._step('S')
 x._step('N')
 x._step('E')
-x._step('S')
 x._step('N')
 x._step('E')
 x._step('S')
 x._step('N')
 x._step('E')
-x._step('S')
-x._step('N')
 x._step('N')
 x._step('E')
 x._step('S')
 x._step('N')
 x._step('E')
-x._step('S')
 x._step('N')
 x._step('E')
 x._step('S')
 x._step('N')
 x._step('E')
+x._step('N')
+x._step('E')
 x._step('S')
 x._step('N')
+x._step('E')
+x._step('N')
+x._step('E')
+x._step('S')
+x._step('N')
+x._step('S')
+x._step('N')
+x._step('E')
