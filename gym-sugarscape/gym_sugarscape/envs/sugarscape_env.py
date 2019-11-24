@@ -67,7 +67,6 @@ class SugarscapeEnv(gym.Env):
         self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
         self.status = self._get_status() # Are all agents still alive or have they all died?
         reward = self._get_reward() # Have all agents been able to get some sugar?
-        ob = self.current_step # what is the current state of the environment
         episode_over = self.status == 'ALL AGENTS DEAD' # Have all the agents died?
         return self.current_step, reward, episode_over, {} # Return the ob, reward, episode_over and {}
 
@@ -335,7 +334,7 @@ class SugarscapeEnv(gym.Env):
             return 'SOME AGENTS STILL ALIVE'
 
 
-    def render(self):
+    def render(self, mode='human', close=False):
         """
             Prints the state of the environment 2D grid
         """
