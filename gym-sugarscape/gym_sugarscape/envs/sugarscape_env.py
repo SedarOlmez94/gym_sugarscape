@@ -361,7 +361,7 @@ class SugarscapeEnv(gym.Env):
             Returns the agents information each iteration of the simulation. ID, SUGAR WEALTH and AGE
         """
         for i in range(number_of_agents_in_list):
-            print(f"AGENT: {list_of_agents_shuffled[i].get_ID()}, WEALTH: {list_of_agents_shuffled[i].get_s_wealth()}, AGE: {list_of_agents_shuffled[i].get_age()}")
+            print("Agent %s is of age %s and has sugar wealth %s" % (list_of_agents_shuffled[i].get_ID(),list_of_agents_shuffled[i].get_age(), list_of_agents_shuffled[i].get_s_wealth()))
 
 
     def _agents_die(self):
