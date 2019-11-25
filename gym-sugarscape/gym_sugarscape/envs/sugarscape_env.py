@@ -67,11 +67,25 @@ class SugarscapeEnv(gym.Env):
         self._take_action(action) # Perform one action (N, E, S or W)
         self.current_step += 1 # Increment simulation step by 1
         #self._agent_s_wealth() # Return agents sugar wealth and information
+        #self._regeneration()
         self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
         self.status = self._get_status() # Are all agents still alive or have they all died?
         reward = self._get_reward() # Have all agents been able to get some sugar?
         episode_over = self.status == 'ALL AGENTS DEAD' # Have all the agents died?
         return self.current_step, reward, episode_over, {} # Return the ob, reward, episode_over and {}
+
+
+    def _regeneration(self):
+        global size_of_environment
+        random_sugar = random.randrange(0, 3)
+        """
+            1. Iterate over all 0 sugar cells of the environment
+            2. change the 0 to a random number between 0 - 5 (so at least some sugar is created)
+        """
+        for x in range(size_of_environment):
+            for y in range(size_of_environment):
+                if(self.environment[x, y] == 0):
+                    self.environment[x, y] = random_sugar
 
 
     def _take_action(self, action):
@@ -280,7 +294,6 @@ class SugarscapeEnv(gym.Env):
         #
         #     number_of_agents = number_of_agents + 1
         global agents_dead
-
         #while(number_of_agents != number_of_agents_in_list):
 
         if (agents_dead == 0):
