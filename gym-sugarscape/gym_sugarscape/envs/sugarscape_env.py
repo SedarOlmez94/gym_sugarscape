@@ -8,6 +8,7 @@ import random
 from six import StringIO
 from agents import Agent
 from IPython.display import Markdown, display
+from pandas import *
 
 
 numpy.set_printoptions(threshold=sys.maxsize)
@@ -63,7 +64,7 @@ class SugarscapeEnv(gym.Env):
 
         self._take_action(action) # Perform one action (N, E, S or W)
         self.current_step += 1 # Increment simulation step by 1
-        self._agent_s_wealth() # Return agents sugar wealth and information
+        #self._agent_s_wealth() # Return agents sugar wealth and information
         self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
         self.status = self._get_status() # Are all agents still alive or have they all died?
         reward = self._get_reward() # Have all agents been able to get some sugar?
@@ -340,7 +341,7 @@ class SugarscapeEnv(gym.Env):
             Prints the state of the environment 2D grid
         """
 
-        print('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
+        return('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
 
     def _agent_s_wealth(self):
