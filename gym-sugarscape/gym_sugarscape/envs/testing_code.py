@@ -14,5 +14,11 @@ def test__get_status():
     assert environment_test._get_status() == 'SOME AGENTS STILL ALIVE'
 
 
+def test__get_status():
+    environment_test = SugarscapeEnv()
+    environment_test.reset(0, 50)
+    assert environment_test._get_status() == 'ALL AGENTS DEAD'
+
+
 import pytest
 pytest.main()

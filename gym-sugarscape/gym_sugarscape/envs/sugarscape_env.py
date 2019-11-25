@@ -31,7 +31,6 @@ class SugarscapeEnv(gym.Env):
         self.current_step = 0
 
 
-
     def step(self, action):
         """
 
