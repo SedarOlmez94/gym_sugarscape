@@ -67,7 +67,6 @@ class SugarscapeEnv(gym.Env):
         self._agent_s_wealth() # Return agents sugar wealth and information
         self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
         self.status = self._get_status() # Are all agents still alive or have they all died?
-        print("STATUS: ", self.status)
         reward = self._get_reward() # Have all agents been able to get some sugar?
         episode_over = self.status == 'ALL AGENTS DEAD' # Have all the agents died?
         return self.current_step, reward, episode_over, {} # Return the ob, reward, episode_over and {}
