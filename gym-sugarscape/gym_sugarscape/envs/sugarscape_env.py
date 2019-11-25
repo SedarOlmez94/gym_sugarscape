@@ -20,11 +20,10 @@ number_of_agents_in_list = 10
 size_of_environment = 0
 agents_dead = 0
 initial_number_of_agents = 0
-
+random.seed(9001)
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
-    random.seed(9001)
 
 
     def __init__(self):
@@ -67,7 +66,7 @@ class SugarscapeEnv(gym.Env):
         self._take_action(action) # Perform one action (N, E, S or W)
         self.current_step += 1 # Increment simulation step by 1
         #self._agent_s_wealth() # Return agents sugar wealth and information
-        #self._regeneration()
+        self._regeneration()
         self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
         self.status = self._get_status() # Are all agents still alive or have they all died?
         reward = self._get_reward() # Have all agents been able to get some sugar?
@@ -279,17 +278,17 @@ class SugarscapeEnv(gym.Env):
 
 
     def _get_reward(self):
-        # """
-        # If all agents have positive s_wealth then reward 1 else 0
-        # therefore, the Q-learning algorithm will try learn how each agent can
-        # move to have positive s_wealth each iteration.
-        # """
+        """
+        If all agents have positive s_wealth then reward 1 else 0
+        therefore, the Q-learning algorithm will try learn how each agent can
+        move to have positive s_wealth each iteration.
+        """
         # number_of_agents = 0
         # while(number_of_agents != number_of_agents_in_list):
         #
-        #     if (list_of_agents_shuffled[number_of_agents].get_s_wealth() > 0):
-        #         return 1
-        #     else:
+        #     if (list_of_agents_shuffled[number_of_agents].get_s_wealth() > 100):
+        #         return 10
+        #     elif():
         #         return -1
         #
         #     number_of_agents = number_of_agents + 1
