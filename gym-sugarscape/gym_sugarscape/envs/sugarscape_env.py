@@ -18,6 +18,8 @@ list_of_agents = []
 list_of_agents_shuffled = {}
 number_of_agents_in_list = 10
 size_of_environment = 0
+agents_dead = 0
+initial_number_of_agents = 0
 
 
 class SugarscapeEnv(gym.Env):
@@ -263,27 +265,37 @@ class SugarscapeEnv(gym.Env):
 
 
     def _get_reward(self):
-        """
-        If all agents have positive s_wealth then reward 1 else 0
-        therefore, the Q-learning algorithm will try learn how each agent can
-        move to have positive s_wealth each iteration.
-        """
-        number_of_agents = 0
+        # """
+        # If all agents have positive s_wealth then reward 1 else 0
+        # therefore, the Q-learning algorithm will try learn how each agent can
+        # move to have positive s_wealth each iteration.
+        # """
+        # number_of_agents = 0
+        # while(number_of_agents != number_of_agents_in_list):
+        #
+        #     if (list_of_agents_shuffled[number_of_agents].get_s_wealth() > 0):
+        #         return 1
+        #     else:
+        #         return -1
+        #
+        #     number_of_agents = number_of_agents + 1
+        global agents_dead
 
-        while(number_of_agents != number_of_agents_in_list):
+        #while(number_of_agents != number_of_agents_in_list):
 
-            if (list_of_agents_shuffled[number_of_agents].get_s_wealth() > 0):
-                return 1
-            else:
-                return -1
-
-            number_of_agents = number_of_agents + 1
+        if (agents_dead == 0):
+            return 10
+        elif(agents_dead < (initial_number_of_agents / 2)):
+            return 5
+        else:
+            return -1
 
 
     def reset(self, number_of_agents_in_list_local, size_of_environment_local):
-        global number_of_agents_in_list, list_of_agents, list_of_agents_shuffled, size_of_environment, observation_space_calculated
+        global number_of_agents_in_list, list_of_agents, list_of_agents_shuffled, size_of_environment, observation_space_calculated, initial_number_of_agents
         number_of_agents_in_list = number_of_agents_in_list_local
         size_of_environment = size_of_environment_local
+        initial_number_of_agents = number_of_agents_in_list_local
         observation_space_calculated = size_of_environment_local
         number_of_agents = 0
         # Reset the state of the environment to an initial state
@@ -363,7 +375,7 @@ class SugarscapeEnv(gym.Env):
         """
         agent_to_die = None
         agent_dead = False
-        global number_of_agents_in_list, size_of_environment
+        global number_of_agents_in_list, size_of_environment, agents_dead
 
 
         # Remove the agents from the dictionary
@@ -380,7 +392,7 @@ class SugarscapeEnv(gym.Env):
 
 
         if(agent_dead == True):
-            print("AGENT DEAD!")
+            agents_dead += 1
             # Remove the agent from the list.
             for i in range(number_of_agents_in_list):
                 if agent_to_die == list_of_agents[i].get_ID():
