@@ -13,27 +13,37 @@ from pandas import *
 
 numpy.set_printoptions(threshold=sys.maxsize)
 logger = logging.getLogger(__name__)
-ACTIONS = ["STATIONARY", "N", "E", "S", "W", "EAT"]
+ACTIONS = ["N", "E", "S", "W", "EAT"]
 list_of_agents = []
 list_of_agents_shuffled = {}
-number_of_agents_in_list = 10
+number_of_agents_in_list = 0
 size_of_environment = 0
 agents_dead = 0
 initial_number_of_agents = 0
+P = {state: {action: []
+    for action in range(5)} for state in range(2500)}# 50 * 50 = 2500 positions on the map any agent can be in, then 5 actions that can occur so 2500 * 5 = 12,500 states/actions
+state = None
+new_row = None
+new_col = None
+reward = None
+done = None
+action_performed = None
+
 random.seed(9001)
 
 class SugarscapeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-
     def __init__(self):
         super(SugarscapeEnv, self).__init__()
         self.action_space = spaces.Discrete(5) #Number of applicable actions
-        self.observation_space = spaces.Discrete(50 * 50)
+        self.observation_space = spaces.Discrete(50 * 50) # state space on 50 by 50 grid
         self.current_step = 0
 
 
+
     def step(self, action):
+        global state, reward, done
         """
 
         Parameters
@@ -62,16 +72,15 @@ class SugarscapeEnv(gym.Env):
                  However, official evaluations of your agent are not allowed to
                  use this for learning.
         """
-
         self._take_action(action) # Perform one action (N, E, S or W)
-        self.current_step += 1 # Increment simulation step by 1
         #self._agent_s_wealth() # Return agents sugar wealth and information
         self._regeneration()
-        self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
-        self.status = self._get_status() # Are all agents still alive or have they all died?
-        reward = self._get_reward() # Have all agents been able to get some sugar?
-        episode_over = self.status == 'ALL AGENTS DEAD' # Have all the agents died?
-        return self.current_step, reward, episode_over, {} # Return the ob, reward, episode_over and {}
+        # The agents_die method doesn't work properly due to list indexing, need to work on that.
+        #self._agents_die() # Have any agents died? If so replace the dead ones with new ones.
+        self.current_step += 1
+        #self.status = self._get_status() # Are all agents still alive or have they all died?
+        #episode_over = self.status == 'ALL AGENTS DEAD' # Have all the agents died?
+        return state, reward, done, {} # Return the ob, reward, episode_over and {}
 
 
     def _regeneration(self):
@@ -87,6 +96,11 @@ class SugarscapeEnv(gym.Env):
                     self.environment[x, y] = random_sugar
 
 
+    def _get_P(self, state):
+        global P
+        return P[state]
+
+
     def _take_action(self, action):
         """
         One action is performed if action is N then agent will consider moving North
@@ -94,7 +108,7 @@ class SugarscapeEnv(gym.Env):
         than or equal all other moves W, E or S. If moving North is not lucractive enough
         then agent will randomly move to the next highest paying cell.
         """
-        global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents_in_list, size_of_environment
+        global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents_in_list, size_of_environment, P, state, new_row, new_col, reward, done, action_performed
         agents_iteration = 0
 
 
@@ -104,10 +118,19 @@ class SugarscapeEnv(gym.Env):
                 #while number_of_agents in range(10):
                 # FOR EACH CELL, CHECK IF AN AGENT OUT OF THE 250 IS STANDING IN THAT CELL.
                 if agents_iteration < number_of_agents_in_list:
-
                     if(self.environment[x, y] == "\033[1mX\033[0m" and list_of_agents_shuffled[agents_iteration].get_ID() == agents_iteration):
+
                         #print(f"agend ID: {list_of_agents_shuffled[agents_iteration].get_ID()} and iteration {agents_iteration}")
                         #current_cell_sugar = self.environment[x, y]
+
+                        #DEFAULTS
+                        state = self.encode(x, y)
+                        new_row = x
+                        new_col = y
+                        self._agents_die()
+                        reward = self._get_reward()
+                        self.status = self._get_status()
+                        done = self.status == 'ALL AGENTS DEAD'
 
                         # Once the agent has been identified in the environment we set the applicable moves and vision variables
                         vision_of_agent = list_of_agents_shuffled[agents_iteration].get_vision()
@@ -131,7 +154,7 @@ class SugarscapeEnv(gym.Env):
 
 
                         # MOVE UP (N)
-                        if(action == ACTIONS[1]):
+                        if(action == ACTIONS[0]):
                             if((move_north >= move_south) and
                                 (move_north >= move_east) and
                                 (move_north >= move_west)):
@@ -149,13 +172,17 @@ class SugarscapeEnv(gym.Env):
                                 self.environment[x, y] = 0
                                 self.environment_duplicate[x, y] = 0
                                 # ADD ACTIONS TO ENV ACT
+                                action_performed = 0
+                                new_row = (x + vision_of_agent) % size_of_environment
+                                new_col = y
+
 
                             else:
                                 self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
 
 
                         # MOVE DOWN (S)
-                        if(action == ACTIONS[3]):
+                        if(action == ACTIONS[2]):
                             if((move_south >= move_north) and
                                 (move_south >= move_east) and
                                 (move_south >= move_west)):
@@ -173,13 +200,15 @@ class SugarscapeEnv(gym.Env):
                                 self.environment[x, y] = 0
                                 self.environment_duplicate[x, y] = 0
                                 # ADD ACTIONS TO ENV ACT
-
+                                action_performed = 2
+                                new_row = (x - vision_of_agent) % size_of_environment
+                                new_col = y
                             else:
                                 self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
 
 
                         # MOVE LEFT (W)
-                        if(action == ACTIONS[4]):
+                        if(action == ACTIONS[3]):
                             if((move_west >= move_south) and
                                 (move_west >= move_east) and
                                 (move_west >= move_north)):
@@ -197,13 +226,17 @@ class SugarscapeEnv(gym.Env):
                                 self.environment[x, y] = 0
                                 self.environment_duplicate[x, y] = 0
                                 # ADD ACTIONS TO ENV ACT
+                                action_performed = 3
+                                new_row = x
+                                new_col = (y - vision_of_agent) % size_of_environment
+
 
                             else:
                                 self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
 
 
                         # MOVE RIGHT (E)
-                        if(action == ACTIONS[2]):
+                        if(action == ACTIONS[1]):
                             if((move_east >= move_south) or
                                 (move_east >= move_west) or
                                 (move_east >= move_north)):
@@ -221,19 +254,32 @@ class SugarscapeEnv(gym.Env):
                                 self.environment[x, y] = 0
                                 self.environment_duplicate[x, y] = 0
                                 # ADD ACTIONS TO ENV ACT
-
+                                action_performed = 1
+                                new_row = x
+                                new_col = (y + vision_of_agent) % size_of_environment
                             else:
                                 self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
+
+
+                        new_state = self.encode(new_row, new_col)
+                        P[state][action_performed].append(
+                            (1.0, new_state, reward, done))
 
                         agents_iteration = agents_iteration + 1
 
 
+    # state = env.get_state()
+    def get_state(self):
+        global state
+        return state
+
+
     def _random_move(self, agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent):
-        global list_of_agents, ACTIONS, list_of_agents_shuffled, number_of_agents_in_list, size_of_environment
-        random_move = random.randrange(1, 4)
+        global list_of_agents, ACTIONS, list_of_agents_shuffled, size_of_environment, P, state, new_row, new_col, reward, done, action_performed
+        random_move = random.randrange(0, 3)
 
 
-        if random_move == 1:
+        if random_move == 0:
             list_of_agents_shuffled[agents_iteration].collect_sugar(move_north)
             list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
             self.environment[(x + vision_of_agent) % size_of_environment, y] = 0
@@ -242,9 +288,12 @@ class SugarscapeEnv(gym.Env):
             self.environment_duplicate[(x + vision_of_agent) % size_of_environment, y] = list_of_agents_shuffled[agents_iteration]
             self.environment[x, y] = 0
             self.environment_duplicate[x, y] = 0
+            action_performed = 0
+            new_row = (x + vision_of_agent) % size_of_environment
+            new_col = y
 
 
-        elif random_move == 2:
+        elif random_move == 1:
             list_of_agents_shuffled[agents_iteration].collect_sugar(move_east)
             list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
             self.environment[x, (y + vision_of_agent) % size_of_environment] = 0
@@ -253,9 +302,12 @@ class SugarscapeEnv(gym.Env):
             self.environment_duplicate[x, (y + vision_of_agent) % size_of_environment] = list_of_agents_shuffled[agents_iteration]
             self.environment[x, y] = 0
             self.environment_duplicate[x, y] = 0
+            action_performed = 1
+            new_row = x
+            new_col = (y + vision_of_agent) % size_of_environment
 
 
-        elif random_move == 3:
+        elif random_move == 2:
             list_of_agents_shuffled[agents_iteration].collect_sugar(move_south)
             list_of_agents_shuffled[agents_iteration].calculate_s_wealth()
             self.environment[(x - vision_of_agent) % size_of_environment, y] = 0
@@ -264,6 +316,9 @@ class SugarscapeEnv(gym.Env):
             self.environment_duplicate[(x - vision_of_agent) % size_of_environment, y] = list_of_agents_shuffled[agents_iteration]
             self.environment[x, y] = 0
             self.environment_duplicate[x, y] = 0
+            action_performed = 2
+            new_row = (x - vision_of_agent) % size_of_environment
+            new_col = y
 
 
         else:
@@ -275,6 +330,34 @@ class SugarscapeEnv(gym.Env):
             self.environment_duplicate[x, (y - vision_of_agent) % size_of_environment] = list_of_agents_shuffled[agents_iteration]
             self.environment[x, y] = 0
             self.environment_duplicate[x, y] = 0
+            action_performed = 3
+            new_row = x
+            new_col = (y - vision_of_agent) % size_of_environment
+
+
+        new_state = self.encode(new_row, new_col)
+        P[state][action_performed].append(
+            (1.0, new_state, reward, done))
+
+
+    # 50 * 50
+    def encode(self, agent_row, agent_column):
+        i = agent_row
+        i *= 50
+        i = agent_column
+        i *= 50
+        return i
+
+
+    def decode(self, i):
+        out = []
+        out.append(i % 50)
+        i = i // 50
+        out.append(i % 50)
+        i = i // 50
+        out.append(i)
+        assert 0 <= i < 50
+        return reversed(out)
 
 
     def _get_reward(self):
@@ -292,12 +375,12 @@ class SugarscapeEnv(gym.Env):
         #         return -1
         #
         #     number_of_agents = number_of_agents + 1
-        global agents_dead
+        global agents_dead, number_of_agents_in_list
         #while(number_of_agents != number_of_agents_in_list):
 
         if (agents_dead == 0):
             return 10
-        elif(agents_dead < (initial_number_of_agents / 2)):
+        elif(agents_dead < (number_of_agents_in_list / 2)):
             return 5
         else:
             return -1
@@ -395,6 +478,7 @@ class SugarscapeEnv(gym.Env):
             if (list_of_agents_shuffled[i].get_age() == self.current_step):
                 """Remove the agent from the list of agents"""
                 agent_to_die = list_of_agents_shuffled[i].get_ID()
+
                 #print(f"AGENT AGE REMOVED FROM DICTIONARY: {list_of_agents_shuffled[i].get_age()}")
                 del list_of_agents_shuffled[i]
                 key_value_of_agent_dead_in_dictionary = i
@@ -409,6 +493,7 @@ class SugarscapeEnv(gym.Env):
             for i in range(number_of_agents_in_list):
                 if agent_to_die == list_of_agents[i].get_ID():
                     del list_of_agents[i]
+
 
             # Create a new agent and add it to the list_of_agents list.
             list_of_agents.append(Agent(key_value_of_agent_dead_in_dictionary))
