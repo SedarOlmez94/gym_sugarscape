@@ -8,7 +8,7 @@ class Agent:
     def __init__(self, ID):
         self.vision = random.randrange(1, 6)
         self.metabolic_rate = random.randrange(1, 4)
-        self.age = random.sample(range(100), 1)
+        self.age = random.randrange(500)
         self.s_wealth = random.randrange(5, 25)
         self.sugar_collected = 0
         self.ID = ID

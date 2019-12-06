@@ -118,6 +118,7 @@ class SugarscapeEnv(gym.Env):
             for y in range(size_of_environment):
                 #while number_of_agents in range(10):
                 # FOR EACH CELL, CHECK IF AN AGENT OUT OF THE 250 IS STANDING IN THAT CELL.
+
                 if agents_iteration < number_of_agents_in_list:
                     if(self.environment[x, y] == "\033[1mX\033[0m" and list_of_agents_shuffled[agents_iteration].get_ID() == agents_iteration):
 
@@ -125,7 +126,7 @@ class SugarscapeEnv(gym.Env):
                         #current_cell_sugar = self.environment[x, y]
 
                         #DEFAULTS
-                        state = self.encode(x, y)
+                        state = self.encode(x, y, self.environment[x, y])
                         new_row = x
                         new_col = y
                         self._agents_die()
@@ -261,7 +262,7 @@ class SugarscapeEnv(gym.Env):
                             else:
                                 self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
 
-                        new_state = self.encode(new_row, new_col)
+                        new_state = self.encode(new_row, new_col, self.environment[new_row, new_col])
                         P[state][action_performed].append(
                             (1.0, new_state, reward, done))
 
@@ -335,13 +336,15 @@ class SugarscapeEnv(gym.Env):
             new_col = (y - vision_of_agent) % size_of_environment
 
 
-        new_state = self.encode(new_row, new_col)
+        new_state = self.encode(new_row, new_col, self.environment[new_row, new_col])
         P[state][action_performed].append(
             (1.0, new_state, reward, done))
 
 
     # 50 * 50
-    def encode(self, agent_row, agent_column):
+    def encode(self, agent_row, agent_column, environment_cell):
+        i = environment_cell
+        i *= 4
         i = agent_row
         i *= 50
         i = agent_column
