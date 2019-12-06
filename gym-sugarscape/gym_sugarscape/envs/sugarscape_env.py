@@ -23,6 +23,7 @@ initial_number_of_agents = 0
 P = {state: {action: []
     for action in range(5)} for state in range(2500)}# 50 * 50 = 2500 positions on the map any agent can be in, then 5 actions that can occur so 2500 * 5 = 12,500 states/actions
 state = None
+new_state = None
 new_row = None
 new_col = None
 reward = None
@@ -43,7 +44,7 @@ class SugarscapeEnv(gym.Env):
 
 
     def step(self, action):
-        global state, reward, done
+        global reward, done
         """
 
         Parameters
@@ -96,9 +97,9 @@ class SugarscapeEnv(gym.Env):
                     self.environment[x, y] = random_sugar
 
 
-    def _get_P(self, state):
+    def _get_P(self):
         global P
-        return P[state]
+        return P
 
 
     def _take_action(self, action):
@@ -259,7 +260,6 @@ class SugarscapeEnv(gym.Env):
                                 new_col = (y + vision_of_agent) % size_of_environment
                             else:
                                 self._random_move(agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent)
-
 
                         new_state = self.encode(new_row, new_col)
                         P[state][action_performed].append(
@@ -476,10 +476,11 @@ class SugarscapeEnv(gym.Env):
         # Remove the agents from the dictionary
         for i in range(number_of_agents_in_list):
             if (list_of_agents_shuffled[i].get_age() == self.current_step):
+
                 """Remove the agent from the list of agents"""
                 agent_to_die = list_of_agents_shuffled[i].get_ID()
-
                 #print(f"AGENT AGE REMOVED FROM DICTIONARY: {list_of_agents_shuffled[i].get_age()}")
+
                 del list_of_agents_shuffled[i]
                 key_value_of_agent_dead_in_dictionary = i
                 # An agent is being deleted from the environment.
@@ -494,11 +495,12 @@ class SugarscapeEnv(gym.Env):
                 if agent_to_die == list_of_agents[i].get_ID():
                     del list_of_agents[i]
 
-
             # Create a new agent and add it to the list_of_agents list.
             list_of_agents.append(Agent(key_value_of_agent_dead_in_dictionary))
             # Add new agent to dictionary.
             list_of_agents_shuffled[key_value_of_agent_dead_in_dictionary] = list_of_agents[len(list_of_agents) - 1]
+
+
             #print(f"AGENT AGE ADDED TO DICTIONARY: {list_of_agents_shuffled[key_value_of_agent_dead_in_dictionary].get_age()}")
             # Replace the agent in the Environment with the new agent.
             for x in range(size_of_environment):
