@@ -274,7 +274,7 @@ class SugarscapeEnv(gym.Env):
         global state
         return state
 
-
+    # Picks random move if moving north, east, west or south isn't lucrative enough.
     def _random_move(self, agents_iteration, move_south, move_east, move_north, move_west, x, y, vision_of_agent):
         global list_of_agents, ACTIONS, list_of_agents_shuffled, size_of_environment, P, state, new_row, new_col, reward, done, action_performed
         random_move = random.randrange(0, 3)
@@ -352,22 +352,10 @@ class SugarscapeEnv(gym.Env):
         return i
 
 
-    def decode(self, i):
-        out = []
-        out.append(i % 50)
-        i = i // 50
-        out.append(i % 50)
-        i = i // 50
-        out.append(i)
-        assert 0 <= i < 50
-        return reversed(out)
-
-
     def _get_reward(self):
         """
-        If all agents have positive s_wealth then reward 1 else 0
-        therefore, the Q-learning algorithm will try learn how each agent can
-        move to have positive s_wealth each iteration.
+        If no agents have died then 10 points, else if half the agents have died
+        5 points else -1. THIS CAN BE CHANGED!
         """
         # number_of_agents = 0
         # while(number_of_agents != number_of_agents_in_list):
@@ -388,7 +376,7 @@ class SugarscapeEnv(gym.Env):
         else:
             return -1
 
-
+    # Reset the environment variables and model to an initial state.
     def reset(self, number_of_agents_in_list_local, size_of_environment_local):
         global number_of_agents_in_list, list_of_agents, list_of_agents_shuffled, size_of_environment, observation_space_calculated, initial_number_of_agents
         number_of_agents_in_list = number_of_agents_in_list_local
@@ -425,7 +413,7 @@ class SugarscapeEnv(gym.Env):
                 list_of_agents_shuffled[number_of_agents] = list_of_agents[number_of_agents]
                 number_of_agents = number_of_agents + 1
 
-
+    # Have all the agents diead? If so return the stopping condition.
     def _get_status(self):
         global size_of_environment
         """
@@ -445,7 +433,7 @@ class SugarscapeEnv(gym.Env):
         else:
             return 'SOME AGENTS STILL ALIVE'
 
-
+    # Print the environment out.
     def render(self, mode='human', close=False):
         """
             Prints the state of the environment 2D grid
@@ -453,7 +441,7 @@ class SugarscapeEnv(gym.Env):
 
         return('\n'.join([''.join(['{:1}'.format(item) for item in row]) for row in self.environment]))
 
-
+    # Return the sugar wealth of each agent.
     def _agent_s_wealth(self):
         """
             Returns the agents information each iteration of the simulation. ID, SUGAR WEALTH and AGE
